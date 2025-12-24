@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
+@theme {
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+
+    @keyframes accordion-down {
+        from {
+            height: 0;
+        }
+
+        to {
+            height: var(--radix-accordion-content-height);
+        }
+    }
+
+    @keyframes accordion-up {
+        from {
+            height: var(--radix-accordion-content-height);
+        }
+
+        to {
+            height: 0;
+        }
+    }
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    /* Violet Base */
+    --background: 265 50% 98%;
+    --foreground: 265 50% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 265 50% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 265 50% 10%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 265 30% 90%;
+    --secondary-foreground: 265 50% 10%;
+    --muted: 265 30% 90%;
+    --muted-foreground: 265 10% 40%;
+    --accent: 265 30% 90%;
+    --accent-foreground: 265 50% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 265 20% 88%;
+    --input: 265 20% 88%;
+    --ring: 262 83% 58%;
+    --radius: 0.75rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+    --background: 265 40% 10%;
+    --foreground: 210 40% 98%;
+    --card: 265 40% 12%;
+    --card-foreground: 210 40% 98%;
+    --popover: 265 40% 12%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 262 83% 68%;
+    /* Lighter violet for dark mode */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 265 20% 20%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 265 20% 20%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 265 20% 20%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 265 20% 20%;
+    --input: 265 20% 20%;
+    --ring: 262 83% 68%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+@layer base {
+    * {
+        @apply border-border;
+    }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    body {
+        @apply bg-background text-foreground;
+    }
 }
