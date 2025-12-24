@@ -62,7 +62,7 @@ export function BudgetCard({ budget, spent }: BudgetCardProps) {
             </Card>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[425px] bg-red-100">
                     <DialogHeader>
                         <DialogTitle>Edit Budget • {budget.category}</DialogTitle>
                     </DialogHeader>

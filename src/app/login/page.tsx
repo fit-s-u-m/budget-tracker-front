@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LockKeyhole, User } from "lucide-react";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 
 export default function LoginPage() {
     const [errorMessage, dispatch, isPending] = useActionState(authenticate, undefined);
@@ -21,40 +27,27 @@ export default function LoginPage() {
                             <span className="text-primary-foreground font-bold text-2xl">B</span>
                         </div>
                     </div>
-                    <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+                    <CardTitle className="text-2xl text-center">Login with Telegram</CardTitle>
                     <CardDescription className="text-center">
-                        Enter your credentials to access the dashboard
+                      Go to our telegram bot `@nehemiah` regiser with /start and enter the 6-digit code we just sent you.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+
                     <form action={dispatch} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="username">Username</Label>
-                            <div className="relative">
-                                <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    id="username"
-                                    name="username"
-                                    placeholder="admin"
-                                    required
-                                    className="pl-9"
-                                />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <div className="relative">
-                                <LockKeyhole className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    minLength={6}
-                                    className="pl-9"
-                                />
-                            </div>
-                        </div>
+                        <InputOTP name="otp" maxLength={6}> 
+                            <InputOTPGroup>
+                              <InputOTPSlot index={0} />
+                              <InputOTPSlot index={1} />
+                              <InputOTPSlot index={2} />
+                            </InputOTPGroup>
+                            <InputOTPSeparator />
+                            <InputOTPGroup>
+                              <InputOTPSlot index={3} />
+                              <InputOTPSlot index={4} />
+                              <InputOTPSlot index={5} />
+                            </InputOTPGroup>
+                        </InputOTP>
                         <div className="flex items-center space-x-2">
                             <div
                                 aria-live="polite"
@@ -69,21 +62,6 @@ export default function LoginPage() {
                         <LoginButton />
                     </form>
                 </CardContent>
-                <CardFooter className="flex flex-col gap-4">
-                    <div className="relative w-full">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">
-                                Or continue with
-                            </span>
-                        </div>
-                    </div>
-                    <Button variant="outline" className="w-full" disabled>
-                        Sign in with Telegram (Coming Soon)
-                    </Button>
-                </CardFooter>
             </Card>
         </div>
     );

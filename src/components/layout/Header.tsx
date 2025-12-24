@@ -6,9 +6,10 @@ import { useStore } from "@/lib/store";
 import { ThemeToggle } from "../ThemeToggle";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu,LogOut } from "lucide-react";
 import { routes } from "./Sidebar";
 import clsx from "clsx";
+import { logout } from "@/lib/actions";
 
 
 export function Header() {
@@ -67,6 +68,9 @@ export function Header() {
 
                 <div className="ml-auto flex items-center gap-2">
                     <ThemeToggle />
+                    <div>
+                      <LogOut className="h-5 w-5 text-muted-foreground cursor-pointer" onClick={logout} />
+                    </div>
                 </div>
             </div>
         </header>

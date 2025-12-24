@@ -2,42 +2,47 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { authConfig } from "./auth.config"
 import { z } from "zod"
-
-async function getUser(username: string): Promise<any | undefined> {
-    const adminUser = process.env.ADMIN_USERNAME
-    const adminPassword = process.env.ADMIN_PASSWORD
-
-    if (username === adminUser) {
-        return {
-            id: "1",
-            name: "Admin",
-            username: adminUser,
-            password: adminPassword
-        }
-    }
-    return undefined
-}
+import { useStore } from "@/lib/store"
+import { verifyOTP } from "./lib/api"
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
-    ...authConfig,
-    providers: [
-        Credentials({
-            async authorize(credentials) {
-                const parsedCredentials = z
-                    .object({ username: z.string(), password: z.string().min(6) })
-                    .safeParse(credentials);
+  session: {
+    strategy: "jwt",
+  },
 
-                if (parsedCredentials.success) {
-                    const { username, password } = parsedCredentials.data;
-                    const user = await getUser(username);
-                    if (!user) return null;
+  providers: [
+    Credentials({
+      name: "OTP",
+      credentials: {
+        otp: { label: "OTP", type: "text" },
+      },
 
-                    if (password === user.password) {
-                        return user;
-                    }
-                }
-                return null;
-            },
-        }),
-    ],
+      async authorize(credentials) {
+        const parsed = z
+          .object({
+            otp: z.string().length(6),
+          })
+          .safeParse(credentials);
+
+        if (!parsed.success) return null;
+
+        const { otp } = parsed.data;
+        console.log("Received OTP for authorization:", otp);
+        try {
+           const res = await verifyOTP(otp)
+           console.log("OTP verification response:", res);
+          console.log("telegram_id:", res.telegram_id, "account_id:", res.account_id);
+
+          useStore.setState({
+              telegram_id: res.telegram_id,
+              account_id: res.account_id,
+          })
+          return res
+        }catch (error) {
+          console.error("OTP verification failed:", error);
+          return null;
+        }
+      },
+    }),
+  ],
 });

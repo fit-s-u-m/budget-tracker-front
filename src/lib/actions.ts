@@ -1,12 +1,13 @@
 'use server';
 
-import { signIn } from '@/auth';
+import { signIn,signOut } from '@/auth';
 import { AuthError } from 'next-auth';
 
 export async function authenticate(
     prevState: string | undefined,
     formData: FormData,
 ) {
+  console.log("Authenticating with form data:", formData);
     try {
         await signIn('credentials', formData);
     } catch (error) {
@@ -20,4 +21,7 @@ export async function authenticate(
         }
         throw error;
     }
+}
+export async function logout() {
+  await signOut({ redirectTo: "/login" });
 }

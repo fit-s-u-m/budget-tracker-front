@@ -11,6 +11,8 @@ interface StoreState {
     monthlySummary: any;
     isLoading: boolean;
     error: string | null;
+    telegram_id:string;
+    account_id: string;
 
     // Actions
     fetchInitialData: () => Promise<void>;
@@ -32,15 +34,20 @@ export const useStore = create<StoreState>()(
             balance: 0,
             monthlySummary: null,
             isLoading: false,
+            telegram_id: "",
+            account_id: "",
             error: null,
 
             fetchInitialData: async () => {
                 set({ isLoading: true, error: null });
+                const account_id = get().account_id
+                const telegram_id = get().telegram_id
+                const defaultLimit = 50;
                 try {
                     const [balanceData, transactionsData, summaryData] = await Promise.all([
-                        api.fetchBalance(),
-                        api.fetchTransactions(),
-                        api.fetchMonthlySummary()
+                        api.fetchBalance(account_id,telegram_id),
+                        api.fetchTransactions(defaultLimit,telegram_id),
+                        api.fetchMonthlySummary(telegram_id)
                     ]);
 
                     // Map backend transactions to frontend type
