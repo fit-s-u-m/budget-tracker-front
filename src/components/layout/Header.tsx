@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { routes } from "./Sidebar";
 import clsx from "clsx";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 
 export function Header() {
@@ -27,7 +26,7 @@ export function Header() {
                             <span className="sr-only">Toggle menu</span>
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0">
+                    <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0 bg-red-100">
                         <SheetTitle className="sr-only">Navigation Menu</SheetTitle> {/* Accessible Title */}
                         <SheetDescription className="sr-only">Main Application Links</SheetDescription>
                         <div className="flex flex-col h-full py-6 px-4">

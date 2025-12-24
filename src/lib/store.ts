@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Transaction, Budget } from './types';
 import * as api from './api';
+import { format, formatISO } from 'date-fns';
 
 interface StoreState {
     transactions: Transaction[];
@@ -47,7 +48,7 @@ export const useStore = create<StoreState>()(
                         id: String(t.id),
                         amount: t.amount,
                         category: t.category_name as any,
-                        date: t.created_at,
+                        date: format(t.created_at,"yyyy-MM-dd"),
                         description: t.reason,
                         type: t.type === 'debit' ? 'expense' : 'income'
                     }));
@@ -72,6 +73,7 @@ export const useStore = create<StoreState>()(
                         category: t.category,
                         type_: t.type === 'expense' ? 'debit' : 'credit',
                         reason: t.description,
+                        created_at: formatISO(t.date) || t.date,
                     };
                     await api.submitTransaction(apiReq);
                     // Refresh data after addition

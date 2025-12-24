@@ -99,7 +99,7 @@ export default function TransactionsPage() {
                                     <TableHead>Category</TableHead>
                                     <TableHead>Date</TableHead>
                                     <TableHead className="text-right">Amount</TableHead>
-                                    <TableHead className="w-[50px]"></TableHead>
+                                    <TableHead className="w-12.5"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

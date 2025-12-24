@@ -27,6 +27,7 @@ export interface TransactionRequest {
     category: string;
     type_: 'debit' | 'credit';
     reason: string;
+    created_at: string;
 }
 
 export async function submitTransaction(txn: TransactionRequest) {

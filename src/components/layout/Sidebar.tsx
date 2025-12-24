@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import clsx from "clsx";
 import { LayoutDashboard, Receipt, PiggyBank, Settings } from "lucide-react";
+import {useStore} from "@/lib/store";
 
 export const routes = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -19,10 +20,10 @@ export function Sidebar({ className }: { className?: string }) {
         <aside className={clsx("h-full w-64 bg-background border-r border-border py-6 px-4 flex flex-col gap-4", className)}>
             <div className="flex items-center gap-3 px-2 pb-6">
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
-                    <span className="text-primary-foreground font-bold text-lg">B</span>
+                    <span className="text-primary-foreground font-bold text-lg">N</span>
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                    BudgetApp
+                <span className="text-xl font-bold bg-gradient-to-r from-black to-purple-600 bg-clip-text text-transparent">
+                    Nehemiah BudgetApp
                 </span>
             </div>
 
@@ -49,7 +50,7 @@ export function Sidebar({ className }: { className?: string }) {
 
             <div className="mt-auto px-4 py-4 rounded-xl bg-card border border-border shadow-sm">
                 <p className="text-xs text-muted-foreground">Total Balance</p>
-                <p className="text-lg font-bold text-green-600 dark:text-green-500">$2,450.00</p>
+                <p className="text-lg font-bold text-green-600 dark:text-green-500">{useStore().balance}</p>
             </div>
         </aside>
     );

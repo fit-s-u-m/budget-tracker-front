@@ -9,6 +9,11 @@ import { useEffect } from "react";
 import { CATEGORIES } from "@/lib/constants";
 
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
     Dialog,
     DialogContent,
     DialogHeader,
@@ -88,7 +93,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
           <Form {...form}>
-            <DialogContent className="sm:max-w-106.25">
+            <DialogContent className="sm:max-w-106.25 bg-gray-300">
                 <DialogHeader>
                     <DialogTitle>{initialData ? "Edit Transaction" : "New Transaction"}</DialogTitle>
                 </DialogHeader>
@@ -164,20 +169,20 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                             control={form.control}
                             name="category"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Category</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a category" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {CATEGORIES.map((cat) => (
-                                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                <FormItem >
+                                      <FormLabel>Category</FormLabel>
+                                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                          <FormControl>
+                                              <SelectTrigger>
+                                                  <SelectValue placeholder="Select a category" />
+                                              </SelectTrigger>
+                                          </FormControl>
+                                          <SelectContent className="z-1000 bg-gray-100">
+                                              {CATEGORIES.map((cat) => (
+                                                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                              ))}
+                                          </SelectContent>
+                                      </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -198,8 +203,8 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                         />
 
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                            <Button type="submit">{initialData ? "Save Changes" : "Add Transaction"}</Button>
+                            <Button type="button" className="cursor-pointer hover:border-red-300 hover:bg-red-300" variant="outline" onClick={onClose}>Cancel</Button>
+                            <Button type="submit" className="cursor-pointer hover:bg-gray-400">{initialData ? "Save Changes" : "Add Transaction"}</Button>
                         </DialogFooter>
                     </form>
             </DialogContent>
