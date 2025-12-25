@@ -1,7 +1,7 @@
 {
     "name": "Budget Tracker App",
     "short_name": "BudgetTracker",
-    "description": "A comprehensive budget tracker built with Next.js and Hero UI",
+    "description": "A comprehensive budget tracker built with Next.js and Shadcn UI.",
     "icons": [
         {
             "src": "/icon-192x192.png",

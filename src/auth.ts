@@ -1,15 +1,11 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { authConfig } from "./auth.config"
 import { z } from "zod"
-import { useStore } from "@/lib/store"
 import { verifyOTP } from "./lib/api"
+import { authConfig } from "./auth.config"
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
-  session: {
-    strategy: "jwt",
-  },
-
+  ...authConfig,
   providers: [
     Credentials({
       name: "OTP",
@@ -29,16 +25,15 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         const { otp } = parsed.data;
         console.log("Received OTP for authorization:", otp);
         try {
-           const res = await verifyOTP(otp)
-           console.log("OTP verification response:", res);
+          const res = await verifyOTP(otp)
+          console.log("OTP verification response:", res);
           console.log("telegram_id:", res.telegram_id, "account_id:", res.account_id);
-
-          useStore.setState({
-              telegram_id: res.telegram_id,
-              account_id: res.account_id,
-          })
-          return res
-        }catch (error) {
+          return {
+            id: String(res.telegram_id),
+            telegram_id: String(res.telegram_id),
+            account_id: String(res.account_id),
+          };
+        } catch (error) {
           console.error("OTP verification failed:", error);
           return null;
         }

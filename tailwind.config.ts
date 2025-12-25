@@ -27,6 +27,8 @@ const config: Config = {
                 ring: "hsl(var(--ring))",
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
+                expense: "hsl(var(--expense))",
+                "expense-foreground": "hsl(var(--expense-foreground))",
                 primary: {
                     DEFAULT: "hsl(var(--primary))",
                     foreground: "hsl(var(--primary-foreground))",

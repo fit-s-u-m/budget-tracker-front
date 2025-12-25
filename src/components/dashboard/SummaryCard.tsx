@@ -36,13 +36,13 @@ export function SummaryCard({ title, amount, type = "balance", index = 0 }: Summ
                     <div>
                         <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{title}</p>
                         <h3 className={`text-2xl font-bold mt-2 ${type === 'income' ? 'text-green-600 dark:text-green-500' :
-                                type === 'expense' ? 'text-red-600 dark:text-red-500' : 'text-foreground'
+                                type === 'expense' ? 'text-expense-foreground' : 'text-foreground'
                             }`}>
                             {formatted}
                         </h3>
                     </div>
                     <div className={`p-3 rounded-full ${type === 'income' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-500' :
-                            type === 'expense' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-500' : 'bg-primary/10 text-primary'
+                            type === 'expense' ? 'bg-expense text-expense-foreground' : 'bg-primary/10 text-primary'
                         }`}>
                         {type === 'income' ? <ArrowUp size={24} /> :
                             type === 'expense' ? <ArrowDown size={24} /> :

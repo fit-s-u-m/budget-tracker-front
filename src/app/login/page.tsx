@@ -71,7 +71,7 @@ function LoginButton() {
     const { pending } = useFormStatus();
 
     return (
-        <Button className="w-full" aria-disabled={pending} disabled={pending}>
+        <Button className="w-full cursor-pointer" aria-disabled={pending} disabled={pending}>
             {pending ? "Signing in..." : "Sign in"}
         </Button>
     );

@@ -11,12 +11,10 @@ interface StoreState {
     monthlySummary: any;
     isLoading: boolean;
     error: string | null;
-    telegram_id:string;
-    account_id: string;
 
     // Actions
-    fetchInitialData: () => Promise<void>;
-    addTransaction: (t: Omit<Transaction, 'id'>) => Promise<void>;
+    fetchInitialData: (telegramId: string, accountId: string) => Promise<void>;
+    addTransaction: (t: Omit<Transaction, 'id'>, telegramId: string, accountId: string) => Promise<void>;
     editTransaction: (t: Transaction) => void;
     removeTransaction: (id: string) => void;
     updateBudget: (b: Budget) => void;
@@ -38,16 +36,14 @@ export const useStore = create<StoreState>()(
             account_id: "",
             error: null,
 
-            fetchInitialData: async () => {
+            fetchInitialData: async (telegramId, accountId) => {
                 set({ isLoading: true, error: null });
-                const account_id = get().account_id
-                const telegram_id = get().telegram_id
                 const defaultLimit = 50;
                 try {
                     const [balanceData, transactionsData, summaryData] = await Promise.all([
-                        api.fetchBalance(account_id,telegram_id),
-                        api.fetchTransactions(defaultLimit,telegram_id),
-                        api.fetchMonthlySummary(telegram_id)
+                        api.fetchBalance(telegramId, accountId),
+                        api.fetchTransactions(telegramId, defaultLimit),
+                        api.fetchMonthlySummary(telegramId)
                     ]);
 
                     // Map backend transactions to frontend type
@@ -55,7 +51,7 @@ export const useStore = create<StoreState>()(
                         id: String(t.id),
                         amount: t.amount,
                         category: t.category_name as any,
-                        date: format(t.created_at,"yyyy-MM-dd"),
+                        date: format(t.created_at, "yyyy-MM-dd"),
                         description: t.reason,
                         type: t.type === 'debit' ? 'expense' : 'income'
                     }));
@@ -71,11 +67,11 @@ export const useStore = create<StoreState>()(
                 }
             },
 
-            addTransaction: async (t) => {
+            addTransaction: async (t, telegramId, accountId) => {
                 set({ isLoading: true, error: null });
                 try {
                     const apiReq: api.TransactionRequest = {
-                        account_id: Number(process.env.NEXT_PUBLIC_DEFAULT_ACCOUNT_ID || 20),
+                        account_id: Number(accountId),
                         amount: t.amount,
                         category: t.category,
                         type_: t.type === 'expense' ? 'debit' : 'credit',
@@ -84,7 +80,7 @@ export const useStore = create<StoreState>()(
                     };
                     await api.submitTransaction(apiReq);
                     // Refresh data after addition
-                    await get().fetchInitialData();
+                    await get().fetchInitialData(telegramId, accountId);
                 } catch (error: any) {
                     set({ error: error.message, isLoading: false });
                 }

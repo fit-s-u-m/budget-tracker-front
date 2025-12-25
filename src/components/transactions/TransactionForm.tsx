@@ -7,11 +7,12 @@ import { Transaction } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { useEffect } from "react";
 import { CATEGORIES } from "@/lib/constants";
+import { useSession } from "next-auth/react";
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover"
 import {
     Dialog,
@@ -46,6 +47,7 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ isOpen, onClose, initialData }: TransactionFormProps) {
+    const { data: session } = useSession();
     const { addTransaction, editTransaction } = useStore();
 
     const form = useForm<TransactionFormData>({
@@ -84,19 +86,23 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
     const onSubmit = async (data: TransactionFormData) => {
         if (initialData) {
             editTransaction({ ...initialData, ...data, category: data.category as any });
-        } else {
-            await addTransaction({ ...data, category: data.category as any });
+        } else if (session?.user?.telegram_id && session?.user?.account_id) {
+            await addTransaction(
+                { ...data, category: data.category as any },
+                session.user.telegram_id,
+                session.user.account_id
+            );
         }
         onClose();
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-          <Form {...form}>
-            <DialogContent className="sm:max-w-106.25 bg-gray-300">
-                <DialogHeader>
-                    <DialogTitle>{initialData ? "Edit Transaction" : "New Transaction"}</DialogTitle>
-                </DialogHeader>
+            <Form {...form}>
+                <DialogContent className="sm:max-w-106.25 bg-gray-300">
+                    <DialogHeader>
+                        <DialogTitle>{initialData ? "Edit Transaction" : "New Transaction"}</DialogTitle>
+                    </DialogHeader>
 
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
@@ -170,19 +176,19 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                             name="category"
                             render={({ field }) => (
                                 <FormItem >
-                                      <FormLabel>Category</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                                          <FormControl>
-                                              <SelectTrigger>
-                                                  <SelectValue placeholder="Select a category" />
-                                              </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent className="z-1000 bg-gray-100">
-                                              {CATEGORIES.map((cat) => (
-                                                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                                              ))}
-                                          </SelectContent>
-                                      </Select>
+                                    <FormLabel>Category</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a category" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent className="z-1000 bg-gray-100">
+                                            {CATEGORIES.map((cat) => (
+                                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -207,8 +213,8 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                             <Button type="submit" className="cursor-pointer hover:bg-gray-400">{initialData ? "Save Changes" : "Add Transaction"}</Button>
                         </DialogFooter>
                     </form>
-            </DialogContent>
-          </Form>
+                </DialogContent>
+            </Form>
         </Dialog>
     );
 }

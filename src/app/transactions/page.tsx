@@ -117,7 +117,7 @@ export default function TransactionsPage() {
                                                 <Badge variant="outline">{item.category}</Badge>
                                             </TableCell>
                                             <TableCell className="text-muted-foreground text-sm">{item.date}</TableCell>
-                                            <TableCell className={`text-right font-medium ${item.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                            <TableCell className={`text-right font-medium ${item.type === 'income' ? 'text-green-600' : 'text-expense-foreground'}`}>
                                                 {item.type === 'income' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
                                             </TableCell>
                                             <TableCell>

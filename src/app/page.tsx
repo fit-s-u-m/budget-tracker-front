@@ -5,15 +5,20 @@ import { useEffect, useState } from "react";
 import { SummaryCard } from "@/components/dashboard/SummaryCard";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
+import { useSession } from "next-auth/react";
 
 export default function DashboardPage() {
+  const sessionResult = useSession();
+  const session = sessionResult?.data;
   const { transactions, balance: storeBalance, fetchInitialData, isLoading, error } = useStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    fetchInitialData();
-  }, [fetchInitialData]);
+    if (session?.user?.telegram_id && session?.user?.account_id) {
+      fetchInitialData(session.user.telegram_id, session.user.account_id);
+    }
+  }, [fetchInitialData, session]);
 
   const income = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
   const expense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
@@ -29,7 +34,16 @@ export default function DashboardPage() {
   if (error) return (
     <div className="p-8 text-center text-red-500">
       <p>Error loading dashboard: {error}</p>
-      <button onClick={() => fetchInitialData()} className="mt-4 px-4 py-2 bg-primary text-white rounded">Retry</button>
+      <button
+        onClick={() => {
+          if (session?.user?.telegram_id && session?.user?.account_id) {
+            fetchInitialData(session.user.telegram_id, session.user.account_id);
+          }
+        }}
+        className="mt-4 px-4 py-2 bg-primary text-white rounded"
+      >
+        Retry
+      </button>
     </div>
   );
 

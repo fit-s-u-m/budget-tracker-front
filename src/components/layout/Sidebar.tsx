@@ -22,7 +22,7 @@ export function Sidebar({ className }: { className?: string }) {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
                     <span className="text-primary-foreground font-bold text-lg">N</span>
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-black to-purple-600 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     Nehemiah BudgetApp
                 </span>
             </div>
@@ -50,7 +50,7 @@ export function Sidebar({ className }: { className?: string }) {
 
             <div className="mt-auto px-4 py-4 rounded-xl bg-card border border-border shadow-sm">
                 <p className="text-xs text-muted-foreground">Total Balance</p>
-                <p className="text-lg font-bold text-green-600 dark:text-green-500">{useStore().balance}</p>
+                <p className="text-lg font-bold text-accent">{useStore().balance}</p>
             </div>
         </aside>
     );
