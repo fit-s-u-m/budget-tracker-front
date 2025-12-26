@@ -54,7 +54,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
         resolver: zodResolver(transactionSchema) as any,
         defaultValues: {
             amount: 0,
-            description: "",
+            description: "From ...",
             category: "Miscellaneous",
             type: "income",
             date: new Date().toISOString().split('T')[0],
@@ -75,8 +75,8 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                 form.reset({
                     amount: 0,
                     description: "From ...",
-                    category: "Other",
-                    type: "expense",
+                    category: "Miscellaneous",
+                    type: "income",
                     date: new Date().toISOString().split('T')[0],
                 });
             }

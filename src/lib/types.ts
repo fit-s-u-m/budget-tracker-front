@@ -14,3 +14,11 @@ export interface Budget {
     category: Category;
     limit: number;
 }
+export interface SearchTransactionsParams {
+  telegramId: number;
+  text?: string;
+  categoryId?: number;
+  txType?: TransactionType;
+  limit?: number;
+  offset?: number;
+}

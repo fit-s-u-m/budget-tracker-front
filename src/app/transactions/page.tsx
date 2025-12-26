@@ -16,26 +16,57 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useDebounce } from "@/hook/useDebounce";
+import { useSession } from "next-auth/react";
+import {searchTransactions} from "@/lib/api";
 
 export default function TransactionsPage() {
+    const { data: session, status } = useSession();
+    const telegramId = session?.user.telegram_id;
+
     const { transactions, removeTransaction } = useStore();
     const [mounted, setMounted] = useState(false);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
     const [filterValue, setFilterValue] = useState("");
+    const debouncedSearch = useDebounce(filterValue);
+    const [loading, setLoading] = useState(false);
+    const [fetchedTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+
+    useEffect(() => {
+        if (!telegramId || status !== "authenticated") return;
+        const controller = new AbortController();
+
+        async function load() {
+          setLoading(true);
+          try {
+            const res = await searchTransactions({
+              telegramId,
+              text: debouncedSearch || undefined,
+              limit: 10,
+            });
+
+            if (!controller.signal.aborted) {
+              setFilteredTransactions(res.items);
+            }
+          } catch (err) {
+            if (!controller.signal.aborted) {
+              console.error(err);
+            }
+          } finally {
+            if (!controller.signal.aborted) {
+              setLoading(false);
+            }
+          }
+        }
+
+        load();
+
+        return () => controller.abort();
+     }, [debouncedSearch, telegramId, status]);
 
     useEffect(() => setMounted(true), []);
-
-    const filteredItems = useMemo(() => {
-        let filtered = [...transactions];
-        if (filterValue) {
-            filtered = filtered.filter((item) =>
-                item.description.toLowerCase().includes(filterValue.toLowerCase())
-            );
-        }
-        return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }, [transactions, filterValue]);
 
     const handleEdit = (item: Transaction) => {
         setEditingTransaction(item);
@@ -87,6 +118,12 @@ export default function TransactionsPage() {
                                 value={filterValue}
                                 onChange={(e) => setFilterValue(e.target.value)}
                             />
+
+                            {
+                              loading && (
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                              )
+                            }
                         </div>
                     </div>
                 </CardHeader>
@@ -103,14 +140,14 @@ export default function TransactionsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredItems.length === 0 ? (
+                                {fetchedTransactions.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={5} className="h-24 text-center">
                                             No results.
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    filteredItems.map((item) => (
+                                    fetchedTransactions.map((item) => (
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium capitalize">{item.description}</TableCell>
                                             <TableCell>
