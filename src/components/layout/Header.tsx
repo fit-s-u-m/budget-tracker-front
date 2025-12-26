@@ -30,7 +30,7 @@ export function Header() {
                     <SheetContent side="left" className="w-[240px] sm:w-[300px] p-0 bg-red-100">
                         <SheetTitle className="sr-only">Navigation Menu</SheetTitle> {/* Accessible Title */}
                         <SheetDescription className="sr-only">Main Application Links</SheetDescription>
-                        <div className="flex flex-col h-full py-6 px-4">
+                        <div className="flex flex-col h-full py-6 px-4 bg-background">
                             <div className="flex items-center gap-3 px-2 pb-6">
                                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                                     <span className="text-primary-foreground font-bold">N</span>

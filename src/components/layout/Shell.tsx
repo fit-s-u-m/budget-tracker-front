@@ -8,7 +8,7 @@ import { PageTransition } from "../PageTransition";
 export function Shell({ children }: { children: ReactNode }) {
     return (
         <div className="flex h-screen w-full bg-background/50 text-foreground overflow-hidden">
-            <div className="hidden md:flex h-full flex-shrink-0">
+            <div className="hidden md:flex h-full shrink-0">
                 <Sidebar className="w-64" />
             </div>
             <div className="flex-1 flex flex-col h-full overflow-hidden">

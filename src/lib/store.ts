@@ -18,6 +18,7 @@ interface StoreState {
     editTransaction: (t: Transaction) => void;
     removeTransaction: (id: string) => void;
     updateBudget: (b: Budget) => void;
+    ws: WebSocket | null;
 }
 
 export const useStore = create<StoreState>()(
@@ -35,11 +36,27 @@ export const useStore = create<StoreState>()(
             telegram_id: "",
             account_id: "",
             error: null,
+            ws: null as WebSocket | null,
 
             fetchInitialData: async (telegramId, accountId) => {
                 set({ isLoading: true, error: null });
                 const defaultLimit = 50;
                 try {
+                    if (!get().ws) {
+                      const ws = new WebSocket("ws://localhost:8000/ws/transactions");
+                        ws.onmessage = (event) => {
+                          const data = JSON.parse(event.data);
+                          if (data.action === "new_transaction") {
+                            set((state) => ({
+                              transactions: [data, ...state.transactions],
+                              balance: state.balance + (data.type === "debit" ? -data.amount : data.amount),
+                            }));
+                          }
+                          set({ws})
+                      };
+                      ws.onopen = () => console.log("WebSocket connected");
+                      ws.onclose = () => console.log("WebSocket disconnected");
+                    }
                     const [balanceData, transactionsData, summaryData] = await Promise.all([
                         api.fetchBalance(telegramId, accountId),
                         api.fetchTransactions(telegramId, defaultLimit),
@@ -53,14 +70,15 @@ export const useStore = create<StoreState>()(
                         category: t.category_name as any,
                         date: format(t.created_at, "yyyy-MM-dd"),
                         description: t.reason,
-                        type: t.type === 'debit' ? 'expense' : 'income'
+                        type: t.type === 'debit' ? 'expense' : 'income',
                     }));
+
 
                     set({
                         balance: balanceData.balance,
                         transactions: mappedTransactions,
                         monthlySummary: summaryData,
-                        isLoading: false
+                        isLoading: false,
                     });
                 } catch (error: any) {
                     set({ error: error.message, isLoading: false });

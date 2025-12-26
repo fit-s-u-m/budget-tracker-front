@@ -48,8 +48,8 @@ export function BudgetCard({ budget, spent }: BudgetCardProps) {
                 </CardHeader>
                 <CardContent>
                     <div className="flex justify-between items-baseline mb-2">
-                        <div className="text-2xl font-bold">${spent.toFixed(0)}</div>
-                        <div className="text-xs text-muted-foreground">of ${budget.limit.toFixed(0)}</div>
+                        <div className="text-2xl font-bold">{spent.toFixed(0)} birr</div>
+                        <div className="text-xs text-muted-foreground">of {budget.limit.toFixed(0)} birr</div>
                     </div>
                     <Progress
                         value={percentage}
@@ -61,8 +61,8 @@ export function BudgetCard({ budget, spent }: BudgetCardProps) {
                 </CardContent>
             </Card>
 
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[425px] bg-red-100">
+            <Dialog open={isOpen} onOpenChange={setIsOpen} >
+                <DialogContent className="sm:max-w-106.25 bg-background">
                     <DialogHeader>
                         <DialogTitle>Edit Budget • {budget.category}</DialogTitle>
                     </DialogHeader>

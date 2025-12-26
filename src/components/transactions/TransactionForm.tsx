@@ -56,7 +56,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
             amount: 0,
             description: "",
             category: "Other",
-            type: "expense",
+            type: "income",
             date: new Date().toISOString().split('T')[0],
         }
     });
@@ -99,7 +99,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <Form {...form}>
-                <DialogContent className="sm:max-w-106.25 bg-gray-300">
+                <DialogContent className="sm:max-w-106.25 bg-background">
                     <DialogHeader>
                         <DialogTitle>{initialData ? "Edit Transaction" : "New Transaction"}</DialogTitle>
                     </DialogHeader>
