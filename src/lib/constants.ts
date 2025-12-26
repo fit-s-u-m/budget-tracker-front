@@ -1,1 +1,1 @@
-export const CATEGORIES = ["Food", "Transport", "Entertainment", "Shopping", "Utilities", "Health", "Salary", "Other"] as const;
+export const CATEGORIES = ["Food", "Transport", "Entertainment", "Shopping", "Utilities", "Health", "Salary","Miscellaneous" ] as const;

@@ -55,7 +55,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
         defaultValues: {
             amount: 0,
             description: "",
-            category: "Other",
+            category: "Miscellaneous",
             type: "income",
             date: new Date().toISOString().split('T')[0],
         }
@@ -74,7 +74,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
             } else {
                 form.reset({
                     amount: 0,
-                    description: "",
+                    description: "From ...",
                     category: "Other",
                     type: "expense",
                     date: new Date().toISOString().split('T')[0],

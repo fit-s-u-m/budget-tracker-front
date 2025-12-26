@@ -46,6 +46,7 @@ export const useStore = create<StoreState>()(
                       const ws = new WebSocket("ws://localhost:8000/ws/transactions");
                         ws.onmessage = (event) => {
                           const data = JSON.parse(event.data);
+                          console.log("websocket message received:", data);
                           if (data.action === "new_transaction") {
                             set((state) => ({
                               transactions: [data, ...state.transactions],

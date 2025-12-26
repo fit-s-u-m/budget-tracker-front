@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { ThemeToggle } from "../ThemeToggle";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Sheet,SheetClose, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu,LogOut } from "lucide-react";
 import { routes } from "./Sidebar";
@@ -41,8 +41,8 @@ export function Header() {
                                 {routes.map((route) => {
                                     const isActive = pathname === route.href;
                                     return (
+                                      <SheetClose key={route.href} asChild>
                                         <Link
-                                            key={route.href}
                                             href={route.href}
                                             className={clsx(
                                                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group text-sm font-medium",
@@ -54,6 +54,7 @@ export function Header() {
                                             <route.icon size={18} />
                                             <span>{route.label}</span>
                                         </Link>
+                                      </SheetClose>
                                     );
                                 })}
                             </nav>
