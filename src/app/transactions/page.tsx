@@ -21,7 +21,7 @@ import { useSession } from "next-auth/react";
 import {searchTransactions} from "@/lib/api";
 
 export default function TransactionsPage() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const telegramId = session?.user.telegram_id;
 
     const { transactions, removeTransaction } = useStore();
@@ -35,14 +35,14 @@ export default function TransactionsPage() {
     const [fetchedTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
 
     useEffect(() => {
-        if (!telegramId || status !== "authenticated") return;
+        if (!telegramId) return;
         const controller = new AbortController();
 
         async function load() {
           setLoading(true);
           try {
             const res = await searchTransactions({
-              telegramId,
+              telegramId:telegramId || "",
               text: debouncedSearch || undefined,
               limit: 10,
             });

@@ -15,7 +15,7 @@ export interface Budget {
     limit: number;
 }
 export interface SearchTransactionsParams {
-  telegramId: number;
+  telegramId: string;
   text?: string;
   categoryId?: number;
   txType?: TransactionType;
