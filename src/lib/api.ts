@@ -1,5 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-import {SearchTransactionsParams} from "@/lib/types"
+import {SearchTransactionsParams, Transaction} from "@/lib/types"
 
 export async function fetchBalance(telegramId: string, accountId: string) {
     const res = await fetch(`${API_URL}/balance?account_id=${accountId}&telegram_id=${telegramId}`);
@@ -74,8 +74,5 @@ export async function searchTransactions({
     throw new Error("Failed to search transactions");
   }
 
-  return res.json() as Promise<{
-    count: number;
-    items: any[];
-  }>;
+  return res.json() as Promise<Transaction[]>;
 }

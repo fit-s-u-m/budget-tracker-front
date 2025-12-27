@@ -48,7 +48,7 @@ export default function TransactionsPage() {
             });
 
             if (!controller.signal.aborted) {
-              setFilteredTransactions(res.items);
+              setFilteredTransactions(res);
             }
           } catch (err) {
             if (!controller.signal.aborted) {
@@ -64,7 +64,7 @@ export default function TransactionsPage() {
         load();
 
         return () => controller.abort();
-     }, [debouncedSearch, telegramId, status]);
+     }, [debouncedSearch, telegramId]);
 
     useEffect(() => setMounted(true), []);
 
