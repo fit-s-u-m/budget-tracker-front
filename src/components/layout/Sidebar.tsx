@@ -5,6 +5,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { LayoutDashboard, Receipt, PiggyBank, Settings } from "lucide-react";
 import {useStore} from "@/lib/store";
+import Image from 'next/image';
 
 export const routes = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -19,8 +20,24 @@ export function Sidebar({ className }: { className?: string }) {
     return (
         <aside className={clsx("h-full w-64 bg-background border-r border-border py-6 px-4 flex flex-col gap-4", className)}>
             <div className="flex items-center gap-3 px-2 pb-6">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
-                    <span className="text-primary-foreground font-bold text-lg">N</span>
+                <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
+                    {/* <span className="text-primary-foreground font-bold text-lg">N</span> */}
+                    <Image
+                      className="block dark:hidden"
+                      src="/NehemiahLight.png"
+                      alt="Nehemiah logo"
+                      width={32}   // match container size
+                      height={32}
+                    />
+
+                    {/* Light mode logo */}
+                    <Image
+                      className="hidden dark:block"
+                      src="/Nehemiah.png"
+                      alt="Nehemiah logo"
+                      width={40}   // match container size
+                      height={40}
+                    />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     Nehemiah BudgetApp
