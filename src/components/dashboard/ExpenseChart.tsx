@@ -16,7 +16,7 @@ export function ExpenseChart() {
     }, []);
 
     const data = useMemo(() => {
-        const expenses = transactions.filter(t => t.type === 'expense');
+        const expenses = transactions.filter(t => t.type === 'debit');
         const grouped = expenses.reduce((acc, t) => {
             acc[t.category] = (acc[t.category] || 0) + t.amount;
             return acc;
