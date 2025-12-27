@@ -28,8 +28,9 @@ export default function LoginPage() {
                         </div>
                     </div>
                     <CardTitle className="text-2xl text-center">Login with Telegram</CardTitle>
+
                     <CardDescription className="text-center">
-                      Go to our telegram bot `@nehemiah` regiser with /start and enter the 6-digit code we just sent you.
+                      To complete your registration, please open our Telegram bot <strong>@nehemiah_budget_bot</strong>, send the <code>/start</code> command, and enter the 6-digit verification code we just sent you. This will securely link your account and allow you to access all features.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

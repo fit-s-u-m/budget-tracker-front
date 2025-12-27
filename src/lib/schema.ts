@@ -6,7 +6,7 @@ export const transactionSchema = z.object({
     description: z.string().min(3, "Description must be at least 3 characters"),
     // Cast readonly array to mutable tuple for z.enum compatibility
     category: z.enum(CATEGORIES as unknown as [string, ...string[]]),
-    type: z.enum(["income", "expense"]),
+    type: z.enum(["debit", "credit"]),
     date: z.string().min(1, "Date is required").refine((val) => !isNaN(Date.parse(val)), "Invalid date"),
 });
 

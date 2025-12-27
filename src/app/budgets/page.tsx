@@ -21,11 +21,12 @@ export default function BudgetsPage() {
 
     const spending = transactions.filter(t => {
         const d = new Date(t.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear && t.type === 'expense';
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear && t.type === 'debit';
     }).reduce((acc, t) => {
         acc[t.category] = (acc[t.category] || 0) + t.amount;
         return acc;
     }, {} as Record<string, number>);
+    console.log({spending,transactions});
 
     return (
         <div className="flex flex-col gap-6 animate-in fade-in duration-500">
@@ -36,7 +37,7 @@ export default function BudgetsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {CATEGORIES.map(cat => {
-                    const budget = budgets.find(b => b.category === cat) || { category: cat, limit: 0 };
+                    const budget = budgets.find(b => b.category.toLowerCase() === cat.toLowerCase()) || { category: cat, limit: 0 };
                     const spent = spending[cat] || 0;
                     return (
                         <BudgetCard key={cat} budget={budget} spent={spent} />

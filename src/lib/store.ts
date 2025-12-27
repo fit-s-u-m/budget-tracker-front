@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { Transaction, Budget } from './types';
 import * as api from './api';
 import { format, formatISO } from 'date-fns';
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
 
 interface StoreState {
     transactions: Transaction[];
@@ -43,7 +44,7 @@ export const useStore = create<StoreState>()(
                 const defaultLimit = 50;
                 try {
                     if (!get().ws) {
-                      const ws = new WebSocket("ws://localhost:8000/ws/transactions");
+                      const ws = new WebSocket(`${WS_URL}/ws/transactions`);
                         ws.onmessage = (event) => {
                           const data = JSON.parse(event.data);
                           console.log("websocket message received:", data);
@@ -71,7 +72,7 @@ export const useStore = create<StoreState>()(
                         category: t.category_name as any,
                         date: format(t.created_at, "yyyy-MM-dd"),
                         description: t.reason,
-                        type: t.type === 'debit' ? 'expense' : 'income',
+                        type: t.type === 'debit' ? 'debit' : 'credit',
                     }));
 
 
@@ -93,7 +94,7 @@ export const useStore = create<StoreState>()(
                         account_id: Number(accountId),
                         amount: t.amount,
                         category: t.category,
-                        type_: t.type === 'expense' ? 'debit' : 'credit',
+                        type_: t.type === 'debit' ? 'debit' : 'credit',
                         reason: t.description,
                         created_at: formatISO(t.date) || t.date,
                     };

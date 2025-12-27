@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useDebounce } from "@/hook/useDebounce";
 import { useSession } from "next-auth/react";
 import {searchTransactions} from "@/lib/api";
+import {format} from "date-fns";
 
 export default function TransactionsPage() {
     const { data: session } = useSession();
@@ -151,11 +152,21 @@ export default function TransactionsPage() {
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium capitalize">{item.description}</TableCell>
                                             <TableCell>
-                                                <Badge variant="outline">{item.category}</Badge>
+                                                <Badge variant="outline">{item.category ?? "other"}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-muted-foreground text-sm">{item.date}</TableCell>
-                                            <TableCell className={`text-right font-medium ${item.type === 'income' ? 'text-green-600' : 'text-expense-foreground'}`}>
-                                                {item.type === 'income' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
+                                            <TableCell className="text-muted-foreground text-sm">
+                                              {
+                                                item.date == null ? 'N/A' :(
+                                                <>
+                                                  <span className="sm:hidden">{format(item.date, "dd/MMM/yyyy")}</span>
+                                                  <span className="hidden sm:inline lg:hidden">{format(item.date, "HH:mm dd/MMM/yyyy")}</span>
+                                                  <span className="hidden lg:inline">{format(item.date, "hh:mm ccc dd/MMM/yyyy BBBB")}</span>
+                                                </>
+                                                )
+                                              }
+                                            </TableCell>
+                                            <TableCell className={`text-right font-medium ${item.type === 'credit' ? 'text-green-600' : 'text-expense-foreground'}`}>
+                                                {item.type === 'debit' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
                                             </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>

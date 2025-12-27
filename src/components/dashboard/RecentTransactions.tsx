@@ -48,8 +48,8 @@ export function RecentTransactions() {
                                         <Badge variant="secondary" className="font-normal">{item.category}</Badge>
                                     </TableCell>
                                     <TableCell className="text-muted-foreground text-sm">{item.date}</TableCell>
-                                    <TableCell className={`text-right font-medium ${item.type === 'income' ? 'text-green-600 dark:text-green-500' : 'text-expense-foreground'}`}>
-                                        {item.type === 'income' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
+                                    <TableCell className={`text-right font-medium ${item.type === 'credit' ? 'text-green-600 dark:text-green-500' : 'text-expense-foreground'}`}>
+                                        {item.type === 'credit' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
                                     </TableCell>
                                 </TableRow>
                             ))

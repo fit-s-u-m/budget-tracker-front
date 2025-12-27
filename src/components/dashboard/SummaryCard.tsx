@@ -9,7 +9,7 @@ import { useRef } from "react";
 interface SummaryCardProps {
     title: string;
     amount: number;
-    type?: "income" | "expense" | "balance";
+    type?: "credit" | "debit" | "balance" ;
     index?: number;
 }
 
@@ -35,17 +35,17 @@ export function SummaryCard({ title, amount, type = "balance", index = 0 }: Summ
                 <CardContent className="flex flex-row items-center justify-between p-6">
                     <div>
                         <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{title}</p>
-                        <h3 className={`text-2xl font-bold mt-2 ${type === 'income' ? 'text-green-600 dark:text-green-500' :
-                                type === 'expense' ? 'text-expense-foreground' : 'text-foreground'
+                        <h3 className={`text-2xl font-bold mt-2 ${type === 'credit' ? 'text-green-600 dark:text-green-500' :
+                                type === 'debit' ? 'text-expense-foreground' : 'text-foreground'
                             }`}>
                             {formatted}
                         </h3>
                     </div>
-                    <div className={`p-3 rounded-full ${type === 'income' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-500' :
-                            type === 'expense' ? 'bg-expense text-expense-foreground' : 'bg-primary/10 text-primary'
+                    <div className={`p-3 rounded-full ${type === 'credit' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-500' :
+                            type === 'debit' ? 'bg-expense text-expense-foreground' : 'bg-primary/10 text-primary'
                         }`}>
-                        {type === 'income' ? <ArrowUp size={24} /> :
-                            type === 'expense' ? <ArrowDown size={24} /> :
+                        {type === 'credit' ? <ArrowUp size={24} /> :
+                            type === 'debit' ? <ArrowDown size={24} /> :
                                 <Wallet size={24} />}
                     </div>
                 </CardContent>

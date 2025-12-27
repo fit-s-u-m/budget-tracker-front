@@ -10,11 +10,6 @@ import { CATEGORIES } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import {
     Dialog,
     DialogContent,
     DialogHeader,
@@ -56,7 +51,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
             amount: 0,
             description: "From ...",
             category: "Miscellaneous",
-            type: "income",
+            type: "credit",
             date: new Date().toISOString().split('T')[0],
         }
     });
@@ -76,7 +71,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                     amount: 0,
                     description: "From ...",
                     category: "Miscellaneous",
-                    type: "income",
+                    type: "credit",
                     date: new Date().toISOString().split('T')[0],
                 });
             }
@@ -119,7 +114,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                                         >
                                             <FormItem className="flex items-center space-x-2 space-y-0">
                                                 <FormControl>
-                                                    <RadioGroupItem value="income" />
+                                                    <RadioGroupItem value="credit" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal text-green-600">
                                                     Income
@@ -127,7 +122,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                                             </FormItem>
                                             <FormItem className="flex items-center space-x-2 space-y-0">
                                                 <FormControl>
-                                                    <RadioGroupItem value="expense" />
+                                                    <RadioGroupItem value="debit" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal text-red-600">
                                                     Expense
