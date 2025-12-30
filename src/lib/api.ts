@@ -1,7 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 import {SearchTransactionsParams, Category,Transaction} from "@/lib/types"
 import {CATEGORIES} from "@/lib/constants"
-import {format} from "date-fns"
+import {format,parse,isValid} from "date-fns"
 
 export async function fetchBalance(telegramId: string, accountId: string) {
     const res = await fetch(`${API_URL}/balance?account_id=${accountId}&telegram_id=${telegramId}`);
@@ -50,23 +50,30 @@ function parseDateInput(input: string): string | null {
   const v = input.toLowerCase().trim();
 
   if (v === "today") {
-    return new Date().toISOString().slice(0, 10);
+    const today = new Date();
+    return format(today, "yyyy-MM-dd");
   }
 
   if (v === "yesterday") {
     const d = new Date();
     d.setDate(d.getDate() - 1);
-    return d.toISOString().slice(0, 10);
+    return format(d, "yyyy-MM-dd");
   }
 
-  // DD-MM-YYYY
-  if (/^\d{2}-\d{2}-\d{4}$/.test(v)) {
-    return format(v,"YYYY-MM-DD");
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+   const d = parse(v, "yyyy-MM-dd", new Date());
+    return isValid(d) ? format(d, "yyyy-MM-dd") : null;
   }
   // 09/12/29
   // DD/MM/YY
   if (/^\d{2}\/\d{2}\/\d{2}$/.test(v)) {
-    return format(v,"YYYY-MM-DD");
+    const d = parse(v, "dd/MM/yy", new Date());
+    return isValid(d) ? format(d, "yyyy-MM-dd") : null;
+  }
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
+    const d = parse(v, "dd/MM/yyyy", new Date());
+    return isValid(d) ? format(d, "yyyy-MM-dd") : null;
   }
 
   return null;
@@ -109,7 +116,7 @@ export async function searchTransactions({
     params.append("category_id", categoryId.toString());
   } else if (date) {
     params.append("created_at", date);
-  }else{
+  }else if (text) {
     params.append("text", text);
   }
 
