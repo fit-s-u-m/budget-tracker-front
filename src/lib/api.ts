@@ -1,5 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-import {SearchTransactionsParams, Transaction} from "@/lib/types"
+import {SearchTransactionsParams, Category,Transaction} from "@/lib/types"
+import {CATEGORIES} from "@/lib/constants"
+import {format} from "date-fns"
 
 export async function fetchBalance(telegramId: string, accountId: string) {
     const res = await fetch(`${API_URL}/balance?account_id=${accountId}&telegram_id=${telegramId}`);
@@ -44,12 +46,52 @@ export async function verifyOTP(otp: string) {
     if (!res.ok) throw new Error('Failed to verify OTP');
     return res.json();
 }
+function parseDateInput(input: string): string | null {
+  const v = input.toLowerCase().trim();
+
+  if (v === "today") {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  if (v === "yesterday") {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().slice(0, 10);
+  }
+
+  // DD-MM-YYYY
+  if (/^\d{2}-\d{2}-\d{4}$/.test(v)) {
+    return format(v,"YYYY-MM-DD");
+  }
+  // 09/12/29
+  // DD/MM/YY
+  if (/^\d{2}\/\d{2}\/\d{2}$/.test(v)) {
+    return format(v,"YYYY-MM-DD");
+  }
+
+  return null;
+}
+
+function findCategoryId(
+  input: string,
+  categories: readonly Category[],
+): number | null {
+  const v = input.toLowerCase().trim();
+
+  categories.forEach(
+    (c,index) => {
+      if(c.toLowerCase() === v){
+        return index
+      }
+    }
+  );
+
+  return null
+}
 
 export async function searchTransactions({
   telegramId,
   text,
-  categoryId,
-  txType,
   limit = 50,
   offset = 0,
 }: SearchTransactionsParams) {
@@ -58,10 +100,18 @@ export async function searchTransactions({
     limit: limit.toString(),
     offset: offset.toString(),
   });
+  if(!text) return
+  const categoryId = findCategoryId(text, CATEGORIES);
+  const date = parseDateInput(text);
+  console.log("Searching transactions with:", {date,categoryId,text});
 
-  if (text) params.append("text", text);
-  if (categoryId) params.append("category_id", categoryId.toString());
-  if (txType) params.append("tx_type", txType);
+  if (categoryId) {
+    params.append("category_id", categoryId.toString());
+  } else if (date) {
+    params.append("created_at", date);
+  }else{
+    params.append("text", text);
+  }
 
   const res = await fetch(
     `${API_URL}/transactions/search?${params.toString()}`,
