@@ -33,7 +33,7 @@ export default function TransactionsPage() {
     const [filterValue, setFilterValue] = useState("");
     const debouncedSearch = useDebounce(filterValue);
     const [loading, setLoading] = useState(false);
-    const [fetchedTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+    const [fetchedTransactions, setFilteredTransactions] = useState<Transaction[]>(transactions);
 
     useEffect(() => {
         if (!telegramId) return;
@@ -115,6 +115,11 @@ export default function TransactionsPage() {
                     <div className="flex items-center gap-4">
                         <div className="relative w-full md:w-64">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            {
+                              loading && (
+                                  <div className="absolute right-2.5 top-2.5 animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                              )
+                            }
                             <Input
                                 placeholder="Search transactions..."
                                 className="pl-9"
@@ -122,11 +127,6 @@ export default function TransactionsPage() {
                                 onChange={(e) => setFilterValue(e.target.value)}
                             />
 
-                            {
-                              loading && (
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                              )
-                            }
                         </div>
                     </div>
                 </CardHeader>
