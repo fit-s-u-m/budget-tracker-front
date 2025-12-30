@@ -47,8 +47,10 @@ export default function TransactionsPage() {
               text: debouncedSearch || undefined,
               limit: 10,
             });
+            console.log(res)
 
             if (!controller.signal.aborted) {
+              if(res)
               setFilteredTransactions(res);
             }
           } catch (err) {
