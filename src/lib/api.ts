@@ -1,7 +1,9 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-import {SearchTransactionsParams, Category,Transaction} from "@/lib/types"
-import {CATEGORIES} from "@/lib/constants"
+import {SearchTransactionsParams, Category,Transaction,TransactionRequest} from "@/lib/types"
+import {CATEGORIES,DEFAULT_LIMIT} from "@/lib/constants"
 import {format,parse,isValid} from "date-fns"
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 
 export async function fetchBalance(telegramId: string, accountId: string) {
     const res = await fetch(`${API_URL}/balance?account_id=${accountId}&telegram_id=${telegramId}`);
@@ -9,9 +11,9 @@ export async function fetchBalance(telegramId: string, accountId: string) {
     return res.json();
 }
 
-export async function fetchTransactions(telegramId: string, limit = 50) {
+export async function fetchTransactions(telegramId: string, offset = 0, limit = 50) {
     // Note: Typo in backend path "trasactions"
-    const res = await fetch(`${API_URL}/trasactions?limit=${limit}&telegram_id=${telegramId}`);
+    const res = await fetch(`${API_URL}/trasactions?limit=${limit}&offset=${offset}&telegram_id=${telegramId}`);
     if (!res.ok) throw new Error('Failed to fetch transactions');
     return res.json();
 }
@@ -20,15 +22,6 @@ export async function fetchMonthlySummary(telegramId: string) {
     const res = await fetch(`${API_URL}/monthly_summary?telegram_id=${telegramId}`);
     if (!res.ok) throw new Error('Failed to fetch monthly summary');
     return res.json();
-}
-
-export interface TransactionRequest {
-    account_id: number;
-    amount: number;
-    category: string;
-    type_: 'debit' | 'credit';
-    reason: string;
-    created_at: string;
 }
 
 export async function submitTransaction(txn: TransactionRequest) {
@@ -41,6 +34,7 @@ export async function submitTransaction(txn: TransactionRequest) {
     return res.json();
 }
 export async function verifyOTP(otp: string) {
+    console.log("api url",API_URL);
     const res = await fetch(`${API_URL}/verify_otp?entered_otp=${otp}`);
     console.log("Verifying OTP with API:", otp, res);
     if (!res.ok) throw new Error('Failed to verify OTP');
@@ -98,8 +92,8 @@ function findCategoryId(
 
 export async function searchTransactions({
   telegramId,
-  text,
-  limit = 50,
+  search,
+  limit = DEFAULT_LIMIT,
   offset = 0,
 }: SearchTransactionsParams) {
   const params = new URLSearchParams({
@@ -107,17 +101,19 @@ export async function searchTransactions({
     limit: limit.toString(),
     offset: offset.toString(),
   });
-  if(!text) return
-  const categoryId = findCategoryId(text, CATEGORIES);
-  const date = parseDateInput(text);
-  console.log("Searching transactions with:", {date,categoryId,text});
+  if(!search) return []
+  if(search.trim() === "") return []
+
+  const categoryId = findCategoryId(search, CATEGORIES);
+  const date = parseDateInput(search);
+  console.log("Searching transactions with:", {date,categoryId,text: search});
 
   if (categoryId) {
     params.append("category_id", categoryId.toString());
   } else if (date) {
     params.append("created_at", date);
-  }else if (text) {
-    params.append("text", text);
+  }else if (search) {
+    params.append("text", search);
   }
 
   const res = await fetch(
@@ -128,7 +124,8 @@ export async function searchTransactions({
   );
 
   if (!res.ok) {
-    throw new Error("Failed to search transactions");
+    return [] // TODO: handler errors properly
+    // throw new Error("Failed to search transactions");
   }
 
   return res.json() as Promise<Transaction[]>;

@@ -42,7 +42,7 @@ export function SummaryCard({ title, amount, type = "balance", index = 0 }: Summ
                         </h3>
                     </div>
                     <div className={`p-3 rounded-full ${type === 'credit' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-500' :
-                            type === 'debit' ? 'bg-expense text-expense-foreground' : 'bg-primary/10 text-primary'
+                            type === 'debit' ? 'bg-expense-foreground text-expense' : 'bg-primary/10 text-primary'
                         }`}>
                         {type === 'credit' ? <ArrowUp size={24} /> :
                             type === 'debit' ? <ArrowDown size={24} /> :

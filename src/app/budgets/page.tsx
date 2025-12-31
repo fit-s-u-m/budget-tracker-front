@@ -4,9 +4,16 @@ import { useStore } from "@/lib/store";
 import { CATEGORIES } from "@/lib/constants";
 import { BudgetCard } from "@/components/budgets/BudgetCard";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useTransactions } from "@/hook/useBudget";
 
 export default function BudgetsPage() {
-    const { budgets, transactions } = useStore();
+    const { budgets } = useStore();
+
+    const { data: session } = useSession();
+    const telegramId = session?.user.telegram_id;
+    const transactions = useTransactions(telegramId).data
+
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
 
@@ -19,14 +26,14 @@ export default function BudgetsPage() {
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
-    const spending = transactions.filter(t => {
+    const spending = transactions ? transactions.filter(t => {
         const d = new Date(t.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear && t.type === 'debit';
     }).reduce((acc, t) => {
         acc[t.category] = (acc[t.category] || 0) + t.amount;
         return acc;
-    }, {} as Record<string, number>);
-    console.log({budgets,spending,transactions});
+    }, {} as Record<string, number>) : {};
+    // console.log({budgets,spending,transactions});
 
     return (
         <div className="flex flex-col gap-6 animate-in fade-in duration-500">

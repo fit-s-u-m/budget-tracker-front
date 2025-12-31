@@ -16,9 +16,16 @@ export interface Budget {
 }
 export interface SearchTransactionsParams {
   telegramId: string;
-  text?: string;
-  categoryId?: number;
-  txType?: TransactionType;
+  search?: string;
   limit?: number;
   offset?: number;
+}
+
+export interface TransactionRequest {
+    account_id: number;
+    amount: number;
+    category: string;
+    type_: 'debit' | 'credit';
+    reason: string;
+    created_at: string;
 }

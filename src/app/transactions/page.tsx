@@ -15,59 +15,38 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useDebounce } from "@/hook/useDebounce";
 import { useSession } from "next-auth/react";
-import {searchTransactions} from "@/lib/api";
+import {useTransactions, useTransactionsSearch } from "@/hook/useBudget";
 import {format} from "date-fns";
 
 export default function TransactionsPage() {
     const { data: session } = useSession();
     const telegramId = session?.user.telegram_id;
 
-    const { transactions, removeTransaction } = useStore();
     const [mounted, setMounted] = useState(false);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+    const [offset, setOffset] = useState(0);
 
     const [filterValue, setFilterValue] = useState("");
     const debouncedSearch = useDebounce(filterValue);
     const [loading, setLoading] = useState(false);
-    const [fetchedTransactions, setFilteredTransactions] = useState<Transaction[]>(transactions);
 
-    useEffect(() => {
-        if (!telegramId) return;
-        const controller = new AbortController();
-
-        async function load() {
-          setLoading(true);
-          try {
-            const res = await searchTransactions({
-              telegramId:telegramId || "",
-              text: debouncedSearch || undefined,
-              limit: 10,
-            });
-            console.log(res)
-
-            if (!controller.signal.aborted) {
-              if(res)
-              setFilteredTransactions(res);
-            }
-          } catch (err) {
-            if (!controller.signal.aborted) {
-              console.error(err);
-            }
-          } finally {
-            if (!controller.signal.aborted) {
-              setLoading(false);
-            }
-          }
-        }
-
-        load();
-
-        return () => controller.abort();
-     }, [debouncedSearch, telegramId]);
+    const transactions = debouncedSearch&&debouncedSearch.trim()!=""
+      ? useTransactionsSearch(telegramId, debouncedSearch,offset).data
+      : useTransactions(telegramId,offset).data;
+    // const  useAddTransaction = useAddTransaction
 
     useEffect(() => setMounted(true), []);
 
@@ -143,14 +122,14 @@ export default function TransactionsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {fetchedTransactions.length === 0 ? (
+                                {!transactions || transactions.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={5} className="h-24 text-center">
                                             No results.
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    fetchedTransactions.map((item) => (
+                                    transactions.map((item) => (
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium capitalize">{item.description}</TableCell>
                                             <TableCell>
@@ -167,7 +146,7 @@ export default function TransactionsPage() {
                                                 )
                                               }
                                             </TableCell>
-                                            <TableCell className={`text-right font-medium ${item.type === 'credit' ? 'text-green-600' : 'text-expense-foreground'}`}>
+                                            <TableCell className={`text-right font-medium ${item.type === 'credit' ? 'text-green-600' : 'text-expense'}`}>
                                                 {item.type === 'debit' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
                                             </TableCell>
                                             <TableCell>
@@ -200,6 +179,23 @@ export default function TransactionsPage() {
             </Card>
 
             <TransactionForm isOpen={isFormOpen} onClose={handleClose} initialData={editingTransaction} />
+
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious href="#" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext href="#" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
         </div>
     );
 }

@@ -4,11 +4,15 @@ import { useStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useMemo, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useTransactions } from "@/hook/useBudget";
 
 const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#6366f1']; // Updated palette
 
 export function ExpenseChart() {
-    const transactions = useStore((state) => state.transactions);
+    const { data: session } = useSession();
+    const telegramId = session?.user.telegram_id;
+    const transactions = useTransactions(telegramId).data
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -16,6 +20,7 @@ export function ExpenseChart() {
     }, []);
 
     const data = useMemo(() => {
+        if(!transactions) return [];
         const expenses = transactions.filter(t => t.type === 'debit');
         const grouped = expenses.reduce((acc, t) => {
             acc[t.category] = (acc[t.category] || 0) + t.amount;

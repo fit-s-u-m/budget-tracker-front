@@ -4,8 +4,14 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { ReactNode } from "react";
 import { PageTransition } from "../PageTransition";
+import { useTransactionsWS } from "@/hook/useTransactionWS";
+import { useSession } from "next-auth/react";
 
 export function Shell({ children }: { children: ReactNode }) {
+  const session = useSession();
+  const telegramId = session?.data?.user?.telegram_id;
+  const accountId = session?.data?.user?.account_id;
+  useTransactionsWS(telegramId, accountId);
     return (
         <div className="flex h-screen w-full bg-background/50 text-foreground overflow-hidden">
             <div className="hidden md:flex h-full shrink-0">

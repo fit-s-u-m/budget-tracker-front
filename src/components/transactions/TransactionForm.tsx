@@ -3,11 +3,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema, TransactionFormData } from "@/lib/schema";
-import { Transaction } from "@/lib/types";
+import { Category, Transaction } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { useEffect } from "react";
 import { CATEGORIES } from "@/lib/constants";
 import { useSession } from "next-auth/react";
+
 
 import {
     Dialog,
@@ -34,6 +35,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useAddTransaction, useEditTransaction } from "@/hook/useBudget";
 
 interface TransactionFormProps {
     isOpen: boolean;
@@ -43,7 +45,12 @@ interface TransactionFormProps {
 
 export function TransactionForm({ isOpen, onClose, initialData }: TransactionFormProps) {
     const { data: session } = useSession();
-    const { addTransaction, editTransaction } = useStore();
+    const {telegram_id,account_id} = session?.user || {}
+    const updateTransaction = useEditTransaction()
+
+    const addTransaction = useAddTransaction(telegram_id||"",account_id||"");
+
+    // const { addTransaction, editTransaction } = useStore();
 
     const form = useForm<TransactionFormData>({
         resolver: zodResolver(transactionSchema) as any,
@@ -80,13 +87,15 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
 
     const onSubmit = async (data: TransactionFormData) => {
         if (initialData) {
-            editTransaction({ ...initialData, ...data, category: data.category as any });
+            updateTransaction({ ...initialData, ...data, category: data.category as any })
         } else if (session?.user?.telegram_id && session?.user?.account_id) {
-            await addTransaction(
-                { ...data, category: data.category as any },
-                session.user.telegram_id,
-                session.user.account_id
-            );
+            addTransaction.mutate({
+               category:data.category as Category,
+               type:data.type,
+               amount:data.amount,
+               description:data.description,
+               date:data.date
+            })
         }
         onClose();
     };
@@ -178,7 +187,7 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                                                 <SelectValue placeholder="Select a category" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent className="z-1000 bg-gray-100">
+                                        <SelectContent className="z-1000 bg-background">
                                             {CATEGORIES.map((cat) => (
                                                 <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                                             ))}

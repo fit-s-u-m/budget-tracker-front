@@ -1,14 +1,19 @@
 "use client";
 
-import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Download, Database } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useTransactions } from "@/hook/useBudget";
 
 export default function SettingsPage() {
-    const { transactions } = useStore();
+
+    const { data: session } = useSession();
+    const telegramId = session?.user.telegram_id;
+    const transactions = useTransactions(telegramId).data
 
     const handleExport = () => {
+        if (!transactions || transactions.length === 0) return
         const csvContent = "data:text/csv;charset=utf-8,"
             + "Date,Description,Category,Type,Amount\n"
             + transactions.map(t => `${t.date},"${t.description.replace(/"/g, '""')}",${t.category},${t.type},${t.amount}`).join("\n");

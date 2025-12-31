@@ -5,14 +5,19 @@ import { useEffect, useState } from "react";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useTransactions } from "@/hook/useBudget";
+import { useSession } from "next-auth/react";
 
 export function RecentTransactions() {
-    const transactions = useStore((state) => state.transactions);
+    // const transactions = useStore((state) => state.transactions);
     const [mounted, setMounted] = useState(false);
+    const { data: session } = useSession();
+    const telegramId = session?.user.telegram_id;
+    const transactions = useTransactions(telegramId).data
 
     useEffect(() => setMounted(true), []);
 
-    const recent = mounted
+    const recent = mounted && transactions
         ? [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5)
         : [];
 
@@ -48,7 +53,7 @@ export function RecentTransactions() {
                                         <Badge variant="secondary" className="font-normal">{item.category}</Badge>
                                     </TableCell>
                                     <TableCell className="text-muted-foreground text-sm">{item.date}</TableCell>
-                                    <TableCell className={`text-right font-medium ${item.type === 'credit' ? 'text-green-600 dark:text-green-500' : 'text-expense-foreground'}`}>
+                                    <TableCell className={`text-right font-medium ${item.type === 'credit' ? 'text-green-600 dark:text-green-500' : 'text-expense'}`}>
                                         {item.type === 'credit' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
                                     </TableCell>
                                 </TableRow>
