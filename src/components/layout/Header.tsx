@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { useStore } from "@/lib/store";
 import { ThemeToggle } from "../ThemeToggle";
 import { Sheet,SheetClose, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,6 @@ import { logout } from "@/lib/actions";
 export function Header() {
     const pathname = usePathname();
     const currentRoute = routes.find(r => r.href === pathname);
-    const { transactions } = useStore(); // Access store if needed for header info
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background">
