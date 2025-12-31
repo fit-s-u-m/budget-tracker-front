@@ -1,7 +1,6 @@
 "use client";
 
-import { useStore } from "@/lib/store";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Search, MoreVertical, Edit, Trash } from "lucide-react";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { Transaction } from "@/lib/types";
@@ -27,7 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useDebounce } from "@/hook/useDebounce";
 import { useSession } from "next-auth/react";
-import {useTransactions, useTransactionsSearch } from "@/hook/useBudget";
+import {useTransactions, useTransactionsSearch,useRemoveTransaction } from "@/hook/useBudget";
 import {format} from "date-fns";
 
 export default function TransactionsPage() {
@@ -57,6 +56,7 @@ export default function TransactionsPage() {
 
     const handleDelete = (id: string) => {
         if (confirm("Are you sure you want to delete this transaction?")) {
+            const removeTransaction = useRemoveTransaction()
             removeTransaction(id);
         }
     };
