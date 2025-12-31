@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { WS_URL } from '@/lib/constants';
 
-export const useTransactionsWS = (telegramId: string, accountId: string) => {
+export const useTransactionsWS = (telegramId: string|undefined, accountId: string| undefined) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -12,6 +12,7 @@ export const useTransactionsWS = (telegramId: string, accountId: string) => {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.action === 'new_transaction') {
+        if (telegramId === undefined || accountId === undefined) return;
         // Refresh queries
         queryClient.invalidateQueries({queryKey: ['transactions', telegramId]});
         queryClient.invalidateQueries({queryKey: ['balance', telegramId, accountId]});

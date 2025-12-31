@@ -4,8 +4,9 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import clsx from "clsx";
 import { LayoutDashboard, Receipt, PiggyBank, Settings } from "lucide-react";
-import {useStore} from "@/lib/store";
 import Image from 'next/image';
+import { useBalance } from "@/hook/useBudget";
+import { useSession } from "next-auth/react";
 
 export const routes = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -16,6 +17,11 @@ export const routes = [
 
 export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
+    const session = useSession()
+    const telegramId = session.data?.user.telegram_id;
+    const accountId = session.data?.user.account_id;
+    const balance = useBalance(telegramId, accountId)?.data?.balance ?? 0;
+    
 
     return (
         <aside className={clsx("h-full w-64 bg-background border-r border-border py-6 px-4 flex flex-col gap-4", className)}>
@@ -67,7 +73,7 @@ export function Sidebar({ className }: { className?: string }) {
 
             <div className="mt-auto px-4 py-4 rounded-xl bg-card border border-border shadow-sm">
                 <p className="text-xs text-muted-foreground">Total Balance</p>
-                <p className="text-lg font-bold text-accent">{useStore().balance}</p>
+                <p className="text-lg font-bold text-accent">{balance}</p>
             </div>
         </aside>
     );
