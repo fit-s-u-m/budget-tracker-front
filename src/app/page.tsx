@@ -23,26 +23,6 @@ export default function DashboardPage() {
   const income = transactions.filter(t => t.type === 'credit').reduce((acc, t) => acc + t.amount, 0);
   const expense = transactions.filter(t => t.type === 'debit').reduce((acc, t) => acc + t.amount, 0);
 
-  // if (!mounted || isLoading) return (
-  //   <div className="p-8 flex justify-center">
-  //     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-  //   </div>
-  // );
-  //
-  // if (error) return (
-  //   <div className="p-8 text-center text-red-500">
-  //     <p>Error loading dashboard: {error}</p>
-  //     <button
-  //       onClick={() => {
-  //         // TODO: write retry logic
-  //       }}
-  //       className="mt-4 px-4 py-2 bg-primary text-white rounded"
-  //     >
-  //       Retry
-  //     </button>
-  //   </div>
-  // );
-
   return (
     <div className="flex flex-col gap-8 animate-in fade-in duration-500">
       <div className="flex flex-col gap-2">

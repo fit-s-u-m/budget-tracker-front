@@ -41,6 +41,7 @@ export default function TransactionsPage() {
     const [filterValue, setFilterValue] = useState("");
     const debouncedSearch = useDebounce(filterValue);
     const [loading, setLoading] = useState(false);
+    const removeTransaction = useRemoveTransaction()
 
     const transactions = debouncedSearch&&debouncedSearch.trim()!=""
       ? useTransactionsSearch(telegramId, debouncedSearch,offset).data
@@ -56,7 +57,6 @@ export default function TransactionsPage() {
 
     const handleDelete = (id: string) => {
         if (confirm("Are you sure you want to delete this transaction?")) {
-            const removeTransaction = useRemoveTransaction()
             removeTransaction(id);
         }
     };

@@ -4,13 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Download, Database } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useTransactions } from "@/hook/useBudget";
+import { useTransactions,useBalance } from "@/hook/useBudget";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { DashboardPDF } from "@/components/downloadable";
 
 export default function SettingsPage() {
 
     const { data: session } = useSession();
     const telegramId = session?.user.telegram_id;
+    const accountId = session?.user.account_id;
     const transactions = useTransactions(telegramId).data
+    const balance = useBalance(telegramId, accountId)?.data?.balance || 0;
+
+    const income = transactions
+      .filter(t => t.type === "credit")
+      .reduce((acc, t) => acc + t.amount, 0);
+
+    const expense = transactions
+      .filter(t => t.type === "debit")
+      .reduce((acc, t) => acc + t.amount, 0);
 
     const handleExport = () => {
         if (!transactions || transactions.length === 0) return
@@ -41,7 +53,7 @@ export default function SettingsPage() {
                     </CardTitle>
                     <CardDescription>Export your data for external use.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex gap-5 flex-col">
                     <div className="flex items-center justify-between p-4 border rounded-lg bg-secondary/50">
                         <div className="space-y-1">
                             <p className="font-medium text-sm">Export Transactions</p>
@@ -51,6 +63,25 @@ export default function SettingsPage() {
                             <Download className="mr-2 h-4 w-4" />
                             Export CSV
                         </Button>
+                    </div>
+                    <div className="flex items-center justify-between p-4 border rounded-lg bg-secondary/50">
+                        <div className="space-y-1">
+                            <p className="font-medium text-sm">Export Transactions</p>
+                            <p className="text-xs text-muted-foreground">Download all your records as a pdf file.</p>
+                        </div>
+                        <Button>
+                          <Download className="mr-2 h-4 w-4" />
+                          <PDFDownloadLink
+                            document={
+                              <DashboardPDF expense={expense} income={income} transactions={transactions} balance={balance} />
+                            }
+                            fileName="dashboard.pdf"
+                          >
+                            {({ loading }) =>
+                              loading ? "Preparing PDF..." : "Download PDF"
+                            }
+                          </PDFDownloadLink>
+                      </Button>
                     </div>
                 </CardContent>
             </Card>

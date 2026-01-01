@@ -5,9 +5,7 @@ import { useFormStatus } from 'react-dom';
 import { authenticate } from '@/lib/actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { LockKeyhole, User } from "lucide-react";
+import Link from "next/link"
 import {
   InputOTP,
   InputOTPGroup,
@@ -30,7 +28,13 @@ export default function LoginPage() {
                     <CardTitle className="text-2xl text-center">Login with Telegram</CardTitle>
 
                     <CardDescription className="text-center">
-                      To complete your registration, please open our Telegram bot <strong>@nehemiah_budget_bot</strong>, send the <code>/start</code> command, and enter the 6-digit verification code we just sent you. This will securely link your account and allow you to access all features.
+                        To complete your registration, please open our Telegram bot{" "}
+                        <Link href="https://t.me/nehemiah_budget_bot" className="text-accent" target="_blank" rel="noopener noreferrer">
+                          @nehemiah_budget_bot
+                        </Link>
+                        <br />
+                        send the <code className="text-accent"> /start</code> command, and enter the 6-digit verification code{" "}
+                        <code className="text-accent">otp</code> we just sent you. This will securely link your account and allow you to access all features.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
