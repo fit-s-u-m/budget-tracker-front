@@ -10,6 +10,12 @@ export async function fetchBalance(telegramId: string) {
     if (!res.ok) throw new Error('Failed to fetch balance');
     return res.json();
 }
+export async function fetchTransactionCount(telegramId: string) {
+  const res = await fetch(`${API_URL}/transactions/count?telegram_id=${telegramId}`);
+  if (!res.ok) throw new Error('Failed to fetch balance');
+  console.log("Transaction count response:", res);
+  return res.json();
+}
 
 export async function fetchTransactions(telegramId: string, offset = 0, limit = 50) {
     // Note: Typo in backend path "trasactions"
@@ -82,7 +88,7 @@ function findCategoryId(
   categories.forEach(
     (c,index) => {
       if(c.toLowerCase() === v){
-        return index
+        return c
       }
     }
   );
@@ -104,12 +110,12 @@ export async function searchTransactions({
   if(!search) return []
   if(search.trim() === "") return []
 
-  const categoryId = findCategoryId(search, CATEGORIES);
+  const category_name = findCategoryId(search, CATEGORIES);
   const date = parseDateInput(search);
-  console.log("Searching transactions with:", {date,categoryId,text: search});
+  console.log("Searching transactions with:", {date,category_name,text: search});
 
-  if (categoryId) {
-    params.append("category_id", categoryId.toString());
+  if (category_name) {
+    params.append("category", category_name.toString());
   } else if (date) {
     params.append("created_at", date);
   }else if (search) {

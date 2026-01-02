@@ -5,6 +5,7 @@ import Link,{LinkProps} from "next/link"
 import { cn } from "@/lib/utils"
 import { ButtonProps, buttonVariants } from "@/components/ui/button"
 
+
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
     role="navigation"
@@ -40,30 +41,71 @@ PaginationItem.displayName = "PaginationItem"
 // } & Pick<ButtonProps, "size"> &
 //   React.ComponentProps<"a">
 //
+// type PaginationLinkProps = {
+//   isActive?: boolean;
+// } & Pick<ButtonProps, "size"> &
+//   Omit<React.ComponentProps<"a">, "href"> & // remove href from <a> props
+//   Pick<LinkProps, "href">;                 // use Next.js Link's href type
+//
+// const PaginationLink = ({
+//   className,
+//   isActive,
+//   size = "icon",
+//   ...props
+// }: PaginationLinkProps) => (
+//   <Link
+//     aria-current={isActive ? "page" : undefined}
+//     className={cn(
+//       buttonVariants({
+//         variant: isActive ? "outline" : "ghost",
+//         size,
+//       }),
+//       className
+//     )}
+//     {...props}
+//   />
+// )
+
 type PaginationLinkProps = {
   isActive?: boolean;
+  href?: LinkProps["href"];
 } & Pick<ButtonProps, "size"> &
-  Omit<React.ComponentProps<"a">, "href"> & // remove href from <a> props
-  Pick<LinkProps, "href">;                 // use Next.js Link's href type
+  React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const PaginationLink = ({
   className,
   isActive,
   size = "icon",
+  href,
   ...props
-}: PaginationLinkProps) => (
-  <Link
-    aria-current={isActive ? "page" : undefined}
-    className={cn(
-      buttonVariants({
-        variant: isActive ? "outline" : "ghost",
-        size,
-      }),
-      className
-    )}
-    {...props}
-  />
-)
+}: PaginationLinkProps) => {
+  const classes = cn(
+    buttonVariants({
+      variant: isActive ? "outline" : "ghost",
+      size,
+    }),
+    className
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        aria-current={isActive ? "page" : undefined}
+        className={classes}
+      />
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      aria-current={isActive ? "page" : undefined}
+      className={classes}
+      {...props}
+    />
+  );
+};
 PaginationLink.displayName = "PaginationLink"
 
 const PaginationPrevious = ({

@@ -22,6 +22,7 @@ export const useTransactions = (telegramId: string | undefined, offset:number = 
                 return data.map((t: any): Transaction => ({
                   id: String(t.id),
                   amount: t.amount,
+                  status:t.status,
                   category: t.category_name,
                   date: t.created_at,
                   description: t.reason,
@@ -141,26 +142,20 @@ export const useUpdateTransaction = () => {
   }
   );
 };
-
-
-// Edit transaction (local only)
-export const useEditTransaction = () => {
-  const queryClient = useQueryClient();
-  return (updated: Transaction) => {
-    const prev = queryClient.getQueryData<Transaction[]>(['transactions']);
-    if (prev) {
-      queryClient.setQueryData(
-        ['transactions'],
-        prev.map((t) => (t.id === updated.id ? updated : t))
-      );
-    }
-  };
+export const useTransactionCount = (telegramId?: string) => {
+  return useQuery<{total:number}>({
+    queryKey: ["transactionCount", telegramId],
+    queryFn: async () => {
+      if (!telegramId) return 0;
+      return api.fetchTransactionCount(telegramId);
+    },
+    enabled: !!telegramId,
+  });
 };
 
-
-export const useTransactionsSearch = (telegramId: string|undefined, search: string,offset: number) =>
+export const useTransactionsSearch = (telegramId: string|undefined, search: string,offset: number, limit?: number) =>
   useQuery<Transaction[]>({
-    queryKey: ['transactions', telegramId, search],
-    queryFn: () => telegramId ? api.searchTransactions({telegramId, search,offset}): [],
+    queryKey: ['transactions', telegramId, search,offset, limit],
+    queryFn: () => telegramId ? api.searchTransactions({telegramId, search,offset,limit}): [],
     enabled: !!search && !!telegramId
   });

@@ -14,24 +14,17 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useDebounce } from "@/hook/useDebounce";
 import { useSession } from "next-auth/react";
-import {useTransactions, useTransactionsSearch,useUndoTransaction,useUpdateTransaction } from "@/hook/useBudget";
+import {useTransactions, useTransactionsSearch,useUndoTransaction,useTransactionCount } from "@/hook/useBudget";
 import {format} from "date-fns";
+import {TransactionsPagination} from "@/components/TransactionPagination";
 
 export default function TransactionsPage() {
     const { data: session } = useSession();
     const telegramId = session?.user.telegram_id;
+    const PAGELIMIT = 2;
 
     const [mounted, setMounted] = useState(false);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -42,10 +35,12 @@ export default function TransactionsPage() {
     const debouncedSearch = useDebounce(filterValue);
     const [loading, setLoading] = useState(false);
     const undoTransaction = useUndoTransaction()
+    const totalCount = useTransactionCount(telegramId).data?.total
+
 
     const transactions = debouncedSearch&&debouncedSearch.trim()!=""
-      ? useTransactionsSearch(telegramId, debouncedSearch,offset).data
-      : useTransactions(telegramId,offset).data;
+      ? useTransactionsSearch(telegramId, debouncedSearch,offset,PAGELIMIT).data
+      : useTransactions(telegramId,offset,PAGELIMIT).data;
     // const  useAddTransaction = useAddTransaction
 
     useEffect(() => setMounted(true), []);
@@ -150,11 +145,15 @@ export default function TransactionsPage() {
                                                 {item.type === 'debit' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
                                             </TableCell>
                                             <TableCell>
-                                            {
-                                              item.status==="active"&&(
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <Button variant="ghost"
+                                                            className={`h-8 w-8 p-0 ${
+                                                                item.status !== "active"
+                                                                  ? "cursor-not-allowed opacity-50"
+                                                                  : "cursor-pointer"
+                                                              }`}
+                                                            disabled={item.status !== "active"}>
                                                             <span className="sr-only">Open menu</span>
                                                             <MoreVertical className="h-4 w-4" />
                                                         </Button>
@@ -170,8 +169,6 @@ export default function TransactionsPage() {
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
-                                              )
-                                            }
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -182,24 +179,8 @@ export default function TransactionsPage() {
                 </CardContent>
             </Card>
 
+            <TransactionsPagination offset={offset} setOffset={setOffset} total={totalCount??0} limit={PAGELIMIT} />
             <TransactionForm isOpen={isFormOpen} onClose={handleClose} initialData={editingTransaction} />
-
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
         </div>
     );
 }
