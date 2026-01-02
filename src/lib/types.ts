@@ -4,6 +4,7 @@ export type Category = "Food" | "Transport" | "Entertainment" | "Shopping" | "Ut
 export interface Transaction {
     id: string;
     amount: number;
+    status:"active" | "undone";
     category: Category;
     date: string;
     description: string;
@@ -22,10 +23,18 @@ export interface SearchTransactionsParams {
 }
 
 export interface TransactionRequest {
-    account_id: number;
+    telegram_id: number;
     amount: number;
     category: string;
     type_: 'debit' | 'credit';
     reason: string;
     created_at: string;
+}
+export interface TransactionRequestUpdate{
+    id:string;
+    status:"active" | "undone";
+    amount: number;
+    category: string;
+    type_: 'debit' | 'credit';
+    reason: string;
 }

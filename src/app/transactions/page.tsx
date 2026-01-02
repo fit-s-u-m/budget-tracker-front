@@ -26,7 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useDebounce } from "@/hook/useDebounce";
 import { useSession } from "next-auth/react";
-import {useTransactions, useTransactionsSearch,useRemoveTransaction } from "@/hook/useBudget";
+import {useTransactions, useTransactionsSearch,useUndoTransaction,useUpdateTransaction } from "@/hook/useBudget";
 import {format} from "date-fns";
 
 export default function TransactionsPage() {
@@ -41,7 +41,7 @@ export default function TransactionsPage() {
     const [filterValue, setFilterValue] = useState("");
     const debouncedSearch = useDebounce(filterValue);
     const [loading, setLoading] = useState(false);
-    const removeTransaction = useRemoveTransaction()
+    const undoTransaction = useUndoTransaction()
 
     const transactions = debouncedSearch&&debouncedSearch.trim()!=""
       ? useTransactionsSearch(telegramId, debouncedSearch,offset).data
@@ -57,7 +57,7 @@ export default function TransactionsPage() {
 
     const handleDelete = (id: string) => {
         if (confirm("Are you sure you want to delete this transaction?")) {
-            removeTransaction(id);
+            undoTransaction.mutate(id);
         }
     };
 
@@ -150,6 +150,8 @@ export default function TransactionsPage() {
                                                 {item.type === 'debit' ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
                                             </TableCell>
                                             <TableCell>
+                                            {
+                                              item.status==="active"&&(
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -164,10 +166,12 @@ export default function TransactionsPage() {
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleDelete(item.id)} className="text-red-600">
                                                             <Trash className="mr-2 h-4 w-4" />
-                                                            Delete
+                                                            Undo
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
+                                              )
+                                            }
                                             </TableCell>
                                         </TableRow>
                                     ))

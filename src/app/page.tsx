@@ -12,10 +12,9 @@ export default function DashboardPage() {
   // const {isLoading, error } = useStore();
 
   const telegramId = session?.user.telegram_id;
-  const accountId = session?.user.account_id;
 
   const transactions = useTransactions(telegramId)?.data || []
-  const balance = useBalance(telegramId,accountId)?.data?.balance || 0;
+  const balance = useBalance(telegramId)?.data?.balance || 0;
 
   const [mounted, setMounted] = useState(false);
 

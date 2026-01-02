@@ -35,7 +35,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useAddTransaction, useEditTransaction } from "@/hook/useBudget";
+import { useAddTransaction, useUpdateTransaction } from "@/hook/useBudget";
 
 interface TransactionFormProps {
     isOpen: boolean;
@@ -45,12 +45,10 @@ interface TransactionFormProps {
 
 export function TransactionForm({ isOpen, onClose, initialData }: TransactionFormProps) {
     const { data: session } = useSession();
-    const {telegram_id,account_id} = session?.user || {}
-    const updateTransaction = useEditTransaction()
+    const {telegram_id} = session?.user || {}
+    const updateTransaction = useUpdateTransaction()
 
-    const addTransaction = useAddTransaction(telegram_id||"",account_id||"");
-
-    // const { addTransaction, editTransaction } = useStore();
+    const addTransaction = useAddTransaction(telegram_id||"");
 
     const form = useForm<TransactionFormData>({
         resolver: zodResolver(transactionSchema) as any,
@@ -87,8 +85,14 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
 
     const onSubmit = async (data: TransactionFormData) => {
         if (initialData) {
-            updateTransaction({ ...initialData, ...data, category: data.category as any })
-        } else if (session?.user?.telegram_id && session?.user?.account_id) {
+             const updated = { ...initialData, ...data, category: data.category as any }
+            updateTransaction.mutate({
+                id:updated.id,
+                category: updated.category,
+                reason:updated.description,
+                amount: updated.amount,
+                type_:updated.type })
+        } else if (session?.user?.telegram_id) {
             addTransaction.mutate({
                category:data.category as Category,
                type:data.type,

@@ -6,7 +6,6 @@ import { authConfig } from "./auth.config"
 
 interface VerifyOTPResponse {
   telegram_id: number;
-  account_id: number;
 }
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
@@ -32,12 +31,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         try {
           const res:VerifyOTPResponse = await verifyOTP(otp)
           console.log("OTP verification response:", res);
-          console.log("telegram_id:", res.telegram_id, "account_id:", res.account_id);
-          if(res.telegram_id && res.account_id) {
+          console.log("telegram_id:", res.telegram_id);
+          if(res.telegram_id) {
               return {
                 id: String(res.telegram_id),
                 telegram_id: String(res.telegram_id),
-                account_id: String(res.account_id),
               };
            }
           return null;

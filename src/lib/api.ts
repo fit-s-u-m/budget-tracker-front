@@ -5,8 +5,8 @@ import {format,parse,isValid} from "date-fns"
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 
-export async function fetchBalance(telegramId: string, accountId: string) {
-    const res = await fetch(`${API_URL}/balance?account_id=${accountId}&telegram_id=${telegramId}`);
+export async function fetchBalance(telegramId: string) {
+    const res = await fetch(`${API_URL}/balance?telegram_id=${telegramId}`);
     if (!res.ok) throw new Error('Failed to fetch balance');
     return res.json();
 }
@@ -130,3 +130,62 @@ export async function searchTransactions({
 
   return res.json() as Promise<Transaction[]>;
 }
+
+// Undo a transaction
+export async function undoTransaction(transactionId: string) {
+  try {
+    const response = await fetch(`${API_URL}/transaction/undo?transaction_id=${transactionId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Undo response:", response);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data; // { transaction_id: "...", status: "undone" | "failed" }
+  } catch (error) {
+    console.error("Failed to undo transaction:", error);
+    return { transaction_id: transactionId, status: "failed" };
+  }
+}
+
+// Update a transaction
+export async function updateTransaction(
+  transactionId: string,
+  txType: string,
+  amount: number,
+  categoryName: string,
+  reason?: string
+) {
+  try {
+    const response = await fetch(`${API_URL}/transaction/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        transaction_id: transactionId,
+        tx_type: txType,
+        amount,
+        category_name: categoryName,
+        reason,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data; // { transaction_id: "...", status: "updated" | "failed" }
+  } catch (error) {
+    console.error("Failed to update transaction:", error);
+    return { transaction_id: transactionId, status: "failed" };
+  }
+}
+

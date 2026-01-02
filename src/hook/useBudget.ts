@@ -2,14 +2,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as api from '@/lib/api';
 import { formatISO } from 'date-fns';
-import {TransactionRequest, Transaction, Budget } from '@/lib/types';
+import {TransactionRequest, Transaction, Budget, TransactionRequestUpdate } from '@/lib/types';
 import { DEFAULT_LIMIT } from '@/lib/constants';
 
 // Fetch balance
-export const useBalance = (telegramId: string | undefined, accountId: string | undefined) =>
+export const useBalance = (telegramId: string | undefined) =>
   useQuery({
-    queryKey: ['balance', telegramId, accountId],
-    queryFn: () => telegramId&&accountId ? api.fetchBalance(telegramId, accountId): 0
+    queryKey: ['balance', telegramId],
+    queryFn: () => telegramId ? api.fetchBalance(telegramId): 0
   })
 
 // Fetch transactions
@@ -39,12 +39,12 @@ export const useMonthlySummary = (telegramId: string) =>
   });
 
 // Add transaction
-export const useAddTransaction = (telegramId: string, accountId: string) => {
+export const useAddTransaction = (telegramId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (t: Omit<Transaction, 'id'>) => {
       const req:TransactionRequest = {
-        account_id: Number(accountId),
+        telegram_id: Number(telegramId),
         amount: t.amount,
         category: t.category,
         type_: t.type === 'debit' ? 'debit' : 'credit',
@@ -56,11 +56,92 @@ export const useAddTransaction = (telegramId: string, accountId: string) => {
    onSuccess: () => {
         // Refresh transactions and balance
         queryClient.invalidateQueries({queryKey: ['transactions', telegramId]});
-        queryClient.invalidateQueries({queryKey: ['balance', telegramId, accountId]});
+        queryClient.invalidateQueries({queryKey: ['balance', telegramId]});
         queryClient.invalidateQueries({queryKey: ['monthlySummary', telegramId]});
       },
   });
 }
+
+// Remove transaction (local only)
+export const useUndoTransaction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      // Call the API
+      const resp = await api.undoTransaction(id);
+      if (resp.status === 'failed') {
+        throw new Error('Undo transaction failed');
+      }
+      return resp;
+    },
+    // Optimistically update the cache
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({queryKey: ['transactions']});
+      const previous = queryClient.getQueryData<Transaction[]>(['transactions']);
+
+      if (previous) {
+        queryClient.setQueryData(
+          ['transactions'],
+          previous.filter((t) => t.id !== id)
+        );
+      }
+
+      return { previous };
+    },
+    // Rollback if mutation fails
+    onError: (err, id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['transactions'], context.previous);
+      }
+    },
+    // Refetch after success
+    onSettled: () => {
+      queryClient.invalidateQueries({queryKey: ['transactions']});
+    },
+  }
+  );
+};
+export const useUpdateTransaction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({id, type_, amount, category,  reason}:TransactionRequestUpdate) => {
+      // Call the API
+      const resp = await api.updateTransaction(id, type_, amount, category, reason);
+      if (resp.status === 'failed') {
+        throw new Error('update transaction failed');
+      }
+      return resp;
+    },
+    // Optimistically update the cache
+    onMutate: async ({id}:TransactionRequestUpdate) => {
+      await queryClient.cancelQueries({queryKey: ['transactions']});
+      const previous = queryClient.getQueryData<Transaction[]>(['transactions']);
+
+      if (previous) {
+        queryClient.setQueryData(
+          ['transactions'],
+          previous.filter((t) => t.id !== id)
+        );
+      }
+
+      return { previous };
+    },
+    // Rollback if mutation fails
+    onError: (err, id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['transactions'], context.previous);
+      }
+    },
+    // Refetch after success
+    onSettled: () => {
+      queryClient.invalidateQueries({queryKey: ['transactions']});
+    },
+  }
+  );
+};
+
 
 // Edit transaction (local only)
 export const useEditTransaction = () => {
@@ -76,19 +157,6 @@ export const useEditTransaction = () => {
   };
 };
 
-// Remove transaction (local only)
-export const useRemoveTransaction = () => {
-  const queryClient = useQueryClient();
-  return (id: string) => {
-    const prev = queryClient.getQueryData<Transaction[]>(['transactions']);
-    if (prev) {
-      queryClient.setQueryData(
-        ['transactions'],
-        prev.filter((t) => t.id !== id)
-      );
-    }
-  };
-};
 
 export const useTransactionsSearch = (telegramId: string|undefined, search: string,offset: number) =>
   useQuery<Transaction[]>({

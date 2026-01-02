@@ -12,17 +12,16 @@ export default function SettingsPage() {
 
     const { data: session } = useSession();
     const telegramId = session?.user.telegram_id;
-    const accountId = session?.user.account_id;
     const transactions = useTransactions(telegramId).data
-    const balance = useBalance(telegramId, accountId)?.data?.balance || 0;
+    const balance = useBalance(telegramId)?.data?.balance || 0;
 
-    const income = transactions
+    const income = transactions ? transactions
       .filter(t => t.type === "credit")
-      .reduce((acc, t) => acc + t.amount, 0);
+      .reduce((acc, t) => acc + t.amount, 0) : [];
 
-    const expense = transactions
+    const expense = transactions ? transactions
       .filter(t => t.type === "debit")
-      .reduce((acc, t) => acc + t.amount, 0);
+      .reduce((acc, t) => acc + t.amount, 0): [];
 
     const handleExport = () => {
         if (!transactions || transactions.length === 0) return
