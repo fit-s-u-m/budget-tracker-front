@@ -1,0 +1,47 @@
+{
+  "name": "Budget Tracker",
+  "short_name": "Budget",
+  "description": "Track your income and expenses offline",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#282828",
+  "theme_color": "#fb4934",
+  "icons": [
+    {
+      "src": "./nehemiahSmall.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./nehemiahLarge.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshotDashboard.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshotTransaction.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshotBudget.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshotSetting.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    }
+  ]
+}
