@@ -19,8 +19,7 @@ export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
     const session = useSession()
     const telegramId = session.data?.user.telegram_id;
-    const accountId = session.data?.user.account_id;
-    const balance = useBalance(telegramId, accountId)?.data?.balance ?? 0;
+    const balance = useBalance(telegramId)?.data?.balance ?? 0;
     
 
     return (
