@@ -26,6 +26,7 @@ export function BudgetCard({ budget, spent }: BudgetCardProps) {
     const { updateBudget } = useStore();
     const [isOpen, setIsOpen] = useState(false);
     const [limit, setLimit] = useState(budget.limit.toString());
+  console.log(budget,spent)
 
     const percentage = budget.limit > 0 ? Math.min((spent / budget.limit) * 100, 100) : (spent > 0 ? 100 : 0);
     const isExceeded = budget.limit > 0 && spent > budget.limit;

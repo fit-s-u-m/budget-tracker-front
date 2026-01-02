@@ -29,11 +29,13 @@ export default function BudgetsPage() {
     const spending = transactions ? transactions.filter(t => {
         const d = new Date(t.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear && t.type === 'debit';
-    }).reduce((acc, t) => {
+    })
+    .map(t=>({...t,category: t.category.toLowerCase()}))
+    .reduce((acc, t) => {
         acc[t.category] = (acc[t.category] || 0) + t.amount;
         return acc;
     }, {} as Record<string, number>) : {};
-    // console.log({budgets,spending,transactions});
+    console.log({budgets,spending,transactions});
 
     return (
         <div className="flex flex-col gap-6 animate-in fade-in duration-500">
