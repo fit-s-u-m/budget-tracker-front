@@ -32,7 +32,6 @@ export interface TransactionRequest {
 }
 export interface TransactionRequestUpdate{
     id:string;
-    status:"active" | "undone";
     amount: number;
     category: string;
     type_: 'debit' | 'credit';

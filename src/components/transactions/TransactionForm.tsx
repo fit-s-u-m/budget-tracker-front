@@ -98,7 +98,8 @@ export function TransactionForm({ isOpen, onClose, initialData }: TransactionFor
                type:data.type,
                amount:data.amount,
                description:data.description,
-               date:data.date
+               date:data.date,
+               status:"active",
             })
         }
         onClose();
