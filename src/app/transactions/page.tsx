@@ -24,7 +24,7 @@ import {TransactionsPagination} from "@/components/TransactionPagination";
 export default function TransactionsPage() {
     const { data: session } = useSession();
     const telegramId = session?.user.telegram_id;
-    const PAGELIMIT = 2;
+    const PAGELIMIT = 6;
 
     const [mounted, setMounted] = useState(false);
     const [isFormOpen, setIsFormOpen] = useState(false);

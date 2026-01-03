@@ -5,43 +5,72 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#282828",
-  "theme_color": "#fb4934",
   "icons": [
     {
-      "src": "./nehemiahSmall.jpg",
+      "src": "./Nehemiah_TSmall.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./nehemiahLarge.jpg",
+      "src": "./Nehemiah_TLarge.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "All Transactions",
+      "short_name": "Transactions",
+      "url": "/transactions",
+      "description": "View your complete transaction history",
+      "icons": [
+        {
+          "src": "./transaction-history.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Expense Overview",
+      "short_name": "Spending",
+      "url": "/budget",
+      "description": "See your spending breakdown and budget status",
+      "icons": [
+        {
+          "src": "./spending.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
   "screenshots": [
     {
-      "src": "screenshotDashboard.png",
+      "src": "./screenshotDashboard.png",
       "type": "image/png",
       "sizes": "1080x1920",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Dashboard Overview"
     },
     {
-      "src": "screenshotTransaction.png",
+      "src": "./screenshotTransaction.png",
       "type": "image/png",
       "sizes": "1080x1920",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Transaction List"
     },
     {
-      "src": "screenshotBudget.png",
+      "src": "./screenshotBudget.png",
       "type": "image/png",
       "sizes": "1080x1920",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Budget Overview"
     },
     {
-      "src": "screenshotSetting.png",
+      "src": "./screenshotSetting.png",
       "type": "image/png",
       "sizes": "1080x1920",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Settings"
     }
   ]
 }
