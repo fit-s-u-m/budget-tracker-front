@@ -1,3 +1,2 @@
-export const CATEGORIES = ["Food", "Transport", "Entertainment", "Shopping", "Utilities", "Health", "Salary","Miscellaneous" ] as const;
 export const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
 export const DEFAULT_LIMIT = 20;

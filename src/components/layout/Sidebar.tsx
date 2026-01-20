@@ -5,7 +5,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { LayoutDashboard, Receipt, PiggyBank, Settings } from "lucide-react";
 import Image from 'next/image';
-import { useBalance } from "@/hook/useBudget";
+import { useUser } from "@/hook/useBudget";
 import { useSession } from "next-auth/react";
 
 export const routes = [
@@ -18,8 +18,8 @@ export const routes = [
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const session = useSession()
-  const telegramId = session.data?.user.telegram_id;
-  const balance = useBalance(telegramId)?.data?.balance ?? 0;
+  const userId = session.data?.user.user_id;
+  const balance = useUser(userId)?.data?.balance ?? 0;
 
 
   return (

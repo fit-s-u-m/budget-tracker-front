@@ -1,11 +1,11 @@
 export type TransactionType = "debit" | "credit";
-export type Category = "Food" | "Transport" | "Entertainment" | "Shopping" | "Utilities" | "Health" | "Salary" | "Miscellaneous";
+export type CategoryName = string
 
 export interface Transaction {
   id: string;
   amount: number;
   status: "active" | "undone";
-  category: Category;
+  category: CategoryName;
   date: string;
   description: string;
   type: TransactionType;
@@ -13,28 +13,35 @@ export interface Transaction {
 }
 
 export interface Budget {
-  category: Category;
+  category: CategoryName;
   limit: number;
 }
 export interface SearchTransactionsParams {
-  telegramId: string;
+  userId: string;
   search?: string;
   limit?: number;
   offset?: number;
 }
 
 export interface TransactionRequest {
-  telegram_id: number;
+  user_id: number;
   amount: number;
-  category: string;
-  type_: 'debit' | 'credit';
+  category_id: number;
+  type: 'debit' | 'credit';
   reason: string;
   created_at: string;
 }
 export interface TransactionRequestUpdate {
   id: string;
   amount: number;
-  category: string;
+  categoryId: number;
   type_: 'debit' | 'credit';
   reason: string;
+}
+export interface TransactionCreate {
+  amount: number;
+  category_id: number;
+  created_at: string;
+  reason: string;
+  type: TransactionType;
 }

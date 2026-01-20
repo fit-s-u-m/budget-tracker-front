@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Download, Database } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useTransactions, useBalance } from "@/hook/useBudget";
+import { useTransactions, useUser } from "@/hook/useBudget";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DashboardPDF } from "@/components/downloadable";
 import { format } from "date-fns";
@@ -19,12 +19,12 @@ export default function SettingsPage() {
   }, []);
 
   const { data: session } = useSession();
-  const telegramId = session?.user.telegram_id;
-  const transactions = useTransactions(telegramId).data
+  const userId = session?.user.user_id;
+  const transactions = useTransactions(userId).data
     ?.filter(i => i.status == "active")
     ?.map(i => ({ ...i, date: format(i.date, "dd-MM-yyyy") }));
 
-  const balance = useBalance(telegramId)?.data?.balance || 0;
+  const balance = useUser(userId)?.data?.balance || 0;
 
   const income = transactions ? transactions
     .filter(t => t.type === "credit")

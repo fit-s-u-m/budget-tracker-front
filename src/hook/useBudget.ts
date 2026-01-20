@@ -2,14 +2,20 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as api from '@/lib/api';
 import { formatISO } from 'date-fns';
-import { TransactionRequest, Transaction, Budget, TransactionRequestUpdate } from '@/lib/types';
+import { TransactionRequest, Transaction, Budget, TransactionRequestUpdate, TransactionCreate } from '@/lib/types';
 import { DEFAULT_LIMIT } from '@/lib/constants';
 
 // Fetch balance
-export const useBalance = (telegramId: string | undefined) =>
+export const useUser = (userId: string | undefined) =>
   useQuery({
-    queryKey: ['balance', telegramId],
-    queryFn: () => telegramId ? api.fetchBalance(telegramId) : 0
+    queryKey: ['user', userId],
+    queryFn: () => userId ? api.fetchUser(userId) : 0
+  })
+
+export const useCategoies = () =>
+  useQuery({
+    queryKey: ['categories'],
+    queryFn: () => api.getAllCategories()
   })
 
 // Fetch transactions
@@ -33,33 +39,27 @@ export const useTransactions = (telegramId: string | undefined, offset: number =
     enabled: !!telegramId
   });
 
-// Fetch monthly summary
-export const useMonthlySummary = (telegramId: string) =>
-  useQuery({
-    queryKey: ['monthlySummary', telegramId],
-    queryFn: () => api.fetchMonthlySummary(telegramId)
-  });
-
 // Add transaction
-export const useAddTransaction = (telegramId: string) => {
+export const useAddTransaction = (userId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (t: Omit<Transaction, 'id'>) => {
+    mutationFn: async (t: Omit<TransactionCreate, 'id'>) => {
+      console.log(t)
       const req: TransactionRequest = {
-        telegram_id: Number(telegramId),
+        user_id: Number(userId),
         amount: t.amount,
-        category: t.category,
-        type_: t.type === 'debit' ? 'debit' : 'credit',
-        reason: t.description,
-        created_at: formatISO(t.date) || t.date,
+        category_id: Number(t.category_id),
+        type: t.type === 'debit' ? 'debit' : 'credit',
+        reason: t.reason,
+        created_at: formatISO(t.created_at) || t.created_at,
       };
       await api.submitTransaction(req);
     },
     onSuccess: () => {
       // Refresh transactions and balance
-      queryClient.invalidateQueries({ queryKey: ['transactions', telegramId] });
-      queryClient.invalidateQueries({ queryKey: ['balance', telegramId] });
-      queryClient.invalidateQueries({ queryKey: ['monthlySummary', telegramId] });
+      queryClient.invalidateQueries({ queryKey: ['transactions', userId] });
+      queryClient.invalidateQueries({ queryKey: ['balance', userId] });
+      queryClient.invalidateQueries({ queryKey: ['monthlySummary', userId] });
     },
   });
 }
@@ -108,9 +108,9 @@ export const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, type_, amount, category, reason }: TransactionRequestUpdate) => {
+    mutationFn: async ({ id, type_, amount, categoryId, reason }: TransactionRequestUpdate) => {
       // Call the API
-      const resp = await api.updateTransaction(id, type_, amount, category, reason);
+      const resp = await api.updateTransaction(id, type_, amount, categoryId, reason);
       if (resp.status === 'failed') {
         throw new Error('update transaction failed');
       }
@@ -154,9 +154,9 @@ export const useTransactionCount = (telegramId?: string) => {
   });
 };
 
-export const useTransactionsSearch = (telegramId: string | undefined, search: string, offset: number, limit?: number) =>
+export const useTransactionsSearch = (userId: string | undefined, search: string, offset: number, limit?: number) =>
   useQuery<Transaction[]>({
-    queryKey: ['transactions', telegramId, search, offset, limit],
-    queryFn: () => telegramId ? api.searchTransactions({ telegramId, search, offset, limit }) : [],
-    enabled: !!search && !!telegramId
+    queryKey: ['transactions', userId, search, offset, limit],
+    queryFn: () => userId ? api.searchTransactions({ userId, search, offset, limit }) : [],
+    enabled: !!search && !!userId
   });

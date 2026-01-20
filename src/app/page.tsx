@@ -5,16 +5,16 @@ import { SummaryCard } from "@/components/dashboard/SummaryCard";
 import { ExpenseChart } from "@/components/dashboard/ExpenseChart";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { useSession } from "next-auth/react";
-import { useTransactions,useBalance } from "@/hook/useBudget";
+import { useTransactions, useUser } from "@/hook/useBudget";
 
 export default function DashboardPage() {
   const session = useSession()?.data;
   // const {isLoading, error } = useStore();
 
-  const telegramId = session?.user.telegram_id;
+  const userId = session?.user.user_id;
 
-  const transactions = useTransactions(telegramId)?.data || []
-  const balance = useBalance(telegramId)?.data?.balance || 0;
+  const transactions = useTransactions(userId)?.data || []
+  const balance = useUser(userId)?.data?.balance || 0;
 
   const [mounted, setMounted] = useState(false);
 
